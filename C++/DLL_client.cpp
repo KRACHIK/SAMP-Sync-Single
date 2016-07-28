@@ -182,14 +182,15 @@ void UDPClientTEST::CLEO_popStruct(float *type, float *x, float *y, float *z)
 void thread_EXE_send(UDPClientTEST* currClient, int timeOut)
 {
 
+	int i=0;
 	while (true)
 	{
 		// random packet bullet explotions
 		char buf[513];
 		sprintf_s(buf, sizeof(buf), "%d %d %d.%d %d.%d %d.%d %d.%d paket-%d",
-			66, 10, rand() % 6, 666, rand() % 100, 1, rand() % 100, 2, rand() % 20, 3, 100500);
+			66, 10, rand() % 6, 666, rand() % 100, 1, rand() % 100, 2, rand() % 20, 3, i);
 		std::string PACKED = buf;
-		
+		++i;
 		(*currClient).send(PACKED);
 		boost::this_thread::sleep(boost::posix_time::millisec(timeOut));
 	}
@@ -209,12 +210,10 @@ void thread_EXE_recov(UDPClientTEST* currClient)
 	while (true)
 	{
 		std::string newPaket = (*currClient).recovdata();
-		if (newPaket != (*currClient).getPaketStr())
-		{
-			(*currClient).setPaketStr(newPaket);
-			(*currClient).printPaket();
-			(*currClient).CLEO_Analiz_paket_and_push_prms_to_struct();
-		}
+		(*currClient).setPaketStr(newPaket);
+		(*currClient).printPaket();
+		(*currClient).CLEO_Analiz_paket_and_push_prms_to_struct();
+		 
 		boost::this_thread::sleep(boost::posix_time::millisec(13));
 	}
 }
