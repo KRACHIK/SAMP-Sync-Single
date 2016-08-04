@@ -119,7 +119,7 @@ void	UDPClient::thereadAntiKick()
 	{
 		if (FlagExit()) break;
 		std::lock_guard<std::recursive_mutex> locker(_lock);
-		boost::this_thread::sleep(boost::posix_time::millisec(700));
+		boost::this_thread::sleep(boost::posix_time::millisec(2700));
 		send("I online");
 	}
 }
@@ -133,12 +133,13 @@ void	UDPClient::thereadFakeGeneratePos(int design)
 		if (FlagExit()) break;
 
 		char buf[513];
-		sprintf_s(buf, sizeof(buf), "%d %d %d.%d %d.%d %d.%d %d.%d paket-%d",
-			66, 10, rand() % 6, 666, rand() % 100, 1, rand() % 100, 2, rand() % 20, 3, i);
+		sprintf_s(buf, sizeof(buf), "%f %d %d.%d %d.%d %d.%d %d.%d paket-%d",
+			66.0, 10, rand() % 6, 666, rand() % 100, 1, rand() % 100, 2, rand() % 20, 3, i);
 		std::string PACKED = buf;
+		std::cout <<"thereadFakeGeneratePos "<< PACKED << "\n";
 		++i;
 		send(PACKED);
-		boost::this_thread::sleep(boost::posix_time::millisec(500));
+		boost::this_thread::sleep(boost::posix_time::millisec(4500));
 
 	}
 }
@@ -169,7 +170,7 @@ void	UDPClient::recov()
 		std::string msg(buff, bytes);
 		setMsg(msg);
 		std::cout << "<- " << msg << "\n";
-		//startDecompose();
+		startDecompose();
 	}
 }
 
@@ -187,7 +188,6 @@ void	UDPClient::setFlagCloseTheread()
 }
 
 void	UDPClient::send(const std::string& msg) {
-	std::lock_guard<std::recursive_mutex> locker(_lock);
 	if (!flag_close)
 	{
 		socket_.send_to(boost::asio::buffer(msg, msg.size()), endpoint_);
@@ -280,9 +280,9 @@ void	UDPClient::calculate_regular_parse_packed()
 				std::cout << "положить взрыв в стек" << "\n";
 				GTA_push_Explotion_to_Dot(token);
 
-			case 65:
-				std::cout << "положить в стек новые координаты" << "\n";
-				GTA_push_obj_pos(token);
+			//case 65:
+			//	std::cout << "положить в стек новые координаты" << "\n";
+			//	GTA_push_obj_pos(token);
 
 			default:
 				break;
@@ -296,7 +296,7 @@ void	UDPClient::calculate_regular_parse_packed()
 void	UDPClient::GTA_push_Explotion_to_Dot(std::string token)
 {
 	//std::cout << "CLEO_parse_prms_for_explotion() sourse: " << token << "\n";
-	int numberLeksema = -1;
+	int numberLeksema = 0;
 	infoWorld	infoWorld_TempForBox;
 	boost::regex reg("(-+|)\\d+(,\\d+)*");
 	for (boost::sregex_iterator it(token.begin(), token.end(), reg); it != boost::sregex_iterator(); ++it)
@@ -305,11 +305,11 @@ void	UDPClient::GTA_push_Explotion_to_Dot(std::string token)
 		switch (numberLeksema)
 		{
 		case 1:
-			std::cout << " box:  design: " << it->str().c_str();
-			infoWorld_TempForBox.GtaPackedType = 66.0; //atoi(it->str().c_str());
+			std::cout << " box:  design marker: " << it->str().c_str();
+			infoWorld_TempForBox.GtaPackedType = 66.0f; //atoi(it->str().c_str());
 			break;
 		case 2:
-			std::cout << " box: type: " << it->str().c_str();
+			std::cout << " box: type explitions: " << it->str().c_str();
 			infoWorld_TempForBox.k1 = (float)atof(it->str().c_str());//radius = (float)atof(it->str().c_str());
 			break;
 		case 3:
@@ -351,7 +351,7 @@ void	UDPClient::GTA_push_obj_pos(std::string token)
 		switch (numberLeksema)
 		{
 		case 1:
-			infoWorld_TempForBox.GtaPackedType = atof(it->str().c_str());
+			infoWorld_TempForBox.GtaPackedType = 65.0f; //  atof(it->str().c_str());
 			break;
 		case 2:
 			infoWorld_TempForBox.k1 = atof(it->str().c_str());
@@ -399,6 +399,15 @@ void	UDPClient::GTA_read_stack(float* idEmtyStack, float* k1, float* k2, float* 
 extern "C" __declspec(dllexport) void	GTA_read_stack(float* idEmtyStack, float* k1, float* k2, float* k3,
 	float* k4, float* k5, float* k6, float* k7, float* k8)
 {
+	*idEmtyStack = -1.13;
+	*k1 = 1.13;
+	*k2 = 2.13;
+	*k3 = 3.13;
+	*k4 = 4.13;
+	*k5 = 5.13;
+	*k6 = 6.13;
+	*k7 = 7.13;
+	*k8 = 8.13;
 	(*ptrClient).GTA_read_stack(idEmtyStack, k1, k2, k3, k4, k5, k6, k7, k8);
 }
 
@@ -441,8 +450,8 @@ extern "C" __declspec(dllexport) void	Public_send_to_serv(std::string msg)
 
 extern "C" __declspec(dllexport) void	Public_send_char_to_serv(char* charmsg)
 {
-	Log("\'Public_send_char_to_serv\' %s", charmsg);
-	Log("\'Public_send_char_to_serv\' pointer ptrClient  = 0x%x", ptrClient);
+	/*Log("\'Public_send_char_to_serv\' %s", charmsg);
+	Log("\'Public_send_char_to_serv\' pointer ptrClient  = 0x%x", ptrClient);*/
 	(*ptrClient).send(charmsg);
 }
 
@@ -496,3 +505,4 @@ std::string getFindFileToken(std::string fileName, std::string findToken)
 
 
 //client	.setFlagCloseTheread();
+

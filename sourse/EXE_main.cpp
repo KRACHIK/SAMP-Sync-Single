@@ -36,10 +36,40 @@ int main(int argc, char *argv[])
 	if (design == 2)
 	{
 		CLEO_connect_to_server_fon();
+		float _idEmtyStack = 1;
+		float _k1 = 1;
+		float _k2 = 1;
+		float _k3 = 1;
+		float _k4 = 1;
+		float _k5 = 1;
+		float _k6 = 1;
+		float _k7 = 1;
+		float _k8 = 1;
+
+		float* idEmtyStack = &_idEmtyStack;
+		float* k1 = &_k1;
+		float* k2 = &_k2;
+		float* k3 = &_k3;
+		float* k4 = &_k4;
+		float* k5 = &_k5;
+		float* k6 = &_k6;
+		float* k7 = &_k7;
+		float* k8 = &_k8;
+
 		while (true)
 		{
+			GTA_read_stack(idEmtyStack, k1, k2, k3, k4, k5, k6, k7, k8);
+
+			std::cout << _idEmtyStack << "\n";
+			std::cout << _k1 << "\n";
+			std::cout << _k2 << "\n";
+			std::cout << _k3 << "\n";
+			std::cout << _k4 << "\n";
+			std::cout << _k5 << "\n";
+			std::cout << _k6 << "\n";
+			std::cout << _k7 << "\n";
+			std::cout << _k8 << "\n";
 			boost::this_thread::sleep(boost::posix_time::millisec(1000));
-			Public_send_to_serv("test");
 		}
 	}
 	if (design == 3)
@@ -51,7 +81,7 @@ int main(int argc, char *argv[])
 	system("pause");
 	return 0;
 }
- 
+
 //%с	Символ типа char
 //%d	Десятичное число целого типа со знаком
 //%i	Десятичное число целого типа со знаком

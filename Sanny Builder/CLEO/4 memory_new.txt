@@ -1,18 +1,20 @@
 {$CLEO .cs} 
 
-
 const
     SCRIPT_NAME  =   "4memory_new"
     scritpPath  =   "CLEO\errorLog.ini"    
 end
 
-
-var
-10@:  float
+const 
+    Library                                 =       0@
+    Public_send_char_to_serv                =       1@
+    GTA_read_stack	    	                =       2@   
+    CLEO_read_stack                         =       3@     
+    CLEO_read_stack                         =       4@    
+    connect_to_server                       =       5@  
 end
-
+ 
 0000: 
-
 
 if
     0@ == 1
@@ -22,77 +24,56 @@ else
     goto @panik_unload    
 end
 
+   
 
 
 :initcializatciia
+
 if
-    0AA2: 0@ = load_library "cleo\NetworkCoreDll.dll" // IF and SET
-then
-    if 
-        0AA4: 1@ = get_proc_address "CLEO_public_get_prms_using_ptr" library 0@       
-    then
-        if 
-           0AA4: 2@ = get_proc_address "CLEO_public_call_func" library 0@     
-        then
-            if 
-                0AA4: 3@ = get_proc_address "CLEO_read_stack" library 0@     
-            then
-                if 
-                0AA4: 5@ = get_proc_address "PUBLIC_send_non_kick_space" library 0@     
-                then
-                    //-                
-                    if 
-                        0AA4: 4@ = get_proc_address "CLEO_public_connect_to_serv" library 0@     
-                    then
-                        0AA5: call 4@ num_params 0 pop 0
-                        goto @main                
-                    else
-                        0AA3: free_library 0@
-                    goto @panik_unload
-                    end
-                    //-------------------------------------
-                else
-                    0AA3: free_library 0@
-                goto @panik_unload
-                end
-            else
-                0AA3: free_library 0@
-                goto @panik_unload
-            end
-        else
-            0AA3: free_library 0@
-            goto @panik_unload
-        end 
-    else
-        0AA3: free_library 0@
-        goto @panik_unload
-    end
-else
-    goto @panik_unload
-end 
+    0AA2: 0@ = load_library "client_Dll_2016.dll"   
+jf @panik_unload
+    0AF1: write_int 0@ to_ini_file scritpPath section SCRIPT_NAME key "client_Dll_2016.dll" 
+
+if
+    0AA4: 1@ = get_proc_address "Public_send_char_to_serv" library 0@
+jf @free_lib_and_end_custom_thread
+    0AF1: write_int 1@ to_ini_file scritpPath section SCRIPT_NAME key "Public_send_char_to_serv" 
+
+if 
+   0AA4: 2@ = get_proc_address "GTA_read_stack" library 0@     
+jf @free_lib_and_end_custom_thread
+    0AF1: write_int 2@ to_ini_file scritpPath section SCRIPT_NAME key "GTA_read_stack" 
+
+if
+0AA4: 5@ = get_proc_address "CLEO_connect_to_server_fon" library 0@     
+jf @free_lib_and_end_custom_thread
+    0AF1: write_int 5@ to_ini_file scritpPath section SCRIPT_NAME key "CLEO_connect_to_server_fon" 
+0AA5: call 5@ num_params 0 pop 0  
+wait 2000
+goto @main                
 
 
 
 
- 
+/*
+extern "C" __declspec(dllexport) void GTA_read_stack(
+	float* idEmtyStack, float* k1, float* k2, float* k3, float* k4, float* k5, float* k6, float* k7, float* k8);
+*/
+
 :main
 while true
-    wait 111
+    wait 11
     if 
        Player.Defined($PLAYER_CHAR)
     then
-        gosub @Send_Sace // DataArival
+        run "5Send_POS_PLAYER_ACTOR.cs" 1 1@
+  
+        gosub @read_memory_stack
+        gosub @if_key_new_theread_addmin_send_special_pos
         gosub @if_key_unload
-        gosub @if_key_slap
-        gosub @get_number_funcs_DLL_for_Call
-        wait 200 
     end
 end // end while
-
-:Send_Sace
-    0AA5: call 5@ num_params 1 pop 1 _wait 100
-    wait 100
-return
+ 
 
 :if_key_unload
 if
@@ -110,49 +91,54 @@ end
 return 
 //---------------
 
-
-:if_key_slap
-if
-    0AB0:   key_pressed 52 // 4
-then 
-    04C4: store_coords_to 20@ 21@ 22@ from_actor $PLAYER_ACTOR with_offset 0.0 0.0 0.0    
-    0AA5: call 1@ num_params 3 pop 3 _z 22@v _y 21@v _z 20@v  //CLEO_public_get_prms_using_ptr(float *x, float *y, float *z) 
-    0AF3: 20@ to_ini_file "CLEO\recv.ini" section "pos" key "f1"
-    0AF3: 21@ to_ini_file "CLEO\recv.ini" section "pos" key "f2"
-    0AF3: 22@ to_ini_file "CLEO\recv.ini" section "pos" key "f3"
-    actor.PutAt($PLAYER_ACTOR,20@, 21@, 22@ )     
-end                             
+:if_key_new_theread_addmin_send_special_pos
+if and
+  0AB0:   key_pressed 16 shift
+  0AB0:   key_pressed 77 M
+then
+  run "5theread_addmin_send_special_pos.cs" _start_flag 1  _ptrFuncs  CLEO_public_send 
+end
 return
 
+// 
 
+:read_memory_stack                 
+//                                                                                                         design
+    0AA5: call_function  GTA_read_stack  num_params 9 pop 9 _number 10@v 11@v 12@v 13@v 14@v 15@v 16@v 17@v 18@v
 
-:get_number_funcs_DLL_for_Call
-
-
-10@ = 13      
-0AA5: call_function 2@ num_params 1 pop 1 _number 10@v     // 2@ =  "CLEO_public_call_func" 
-
-0AF3: 10@ to_ini_file "CLEO\recv.ini" section "idintificator" key "val_float"
-0AF1: 10@ to_ini_file "CLEO\recv.ini" section "idintificator" key "val_int"                    
+    0AF3: write_float 10@ to_ini_file scritpPath  section "val" key  "10@"
+    0AF3: write_float 11@ to_ini_file scritpPath  section "val" key  "11@"
+    0AF3: write_float 12@ to_ini_file scritpPath  section "val" key  "12@"
+    0AF3: write_float 13@ to_ini_file scritpPath  section "val" key  "13@"
+    0AF3: write_float 14@ to_ini_file scritpPath  section "val" key  "14@"
+    0AF3: write_float 15@ to_ini_file scritpPath  section "val" key  "15@"
+    0AF3: write_float 16@ to_ini_file scritpPath  section "val" key  "16@"
+    0AF3: write_float 17@ to_ini_file scritpPath  section "val" key  "17@"
+    0AF3: write_float 18@ to_ini_file scritpPath  section "val" key  "18@"
+                  
+//     run "5_ini_funcs.cs" 1 10@v 11@v 12@v 13@v 14@v 15@v 16@v 17@v 18@v 
+//----------------------
 WAIT 10 
         if
-            10@ == 66.0
-                then
-                    0AA5: call_function 3@ num_params 4 pop 4 _number 10@v 11@V 12@V 13@V
-                    0A92:create_custom_thread "5create_explosion.cs" 1 10@ 11@ 12@ 13@     
+            18@ == 66.0                                             
+                then    
+                                
+                    0A92:create_custom_thread "5create_explosion.cs" 1  17@ 16@ 15@ 14@   
+                    // 17@ = type
+                    // 16 x
+                    // 15 y
+                    // 14 z 
                     018C: play_sound 1052 at 0.0 0.0 0.0                    
                         end    
+//----------------------
 return 
-//    if 
-//        10@ == 66
-//    then
+ 
+ 
 
-        //0AA5: call_function 3@ num_params 4 pop 4  10@v 11@v 12@v 13@v        // CLEO_read_stack = 3@
-//        actor.PutAt($PLAYER_ACTOR,11@, 12@, 13@ )          
-//        0A92:create_custom_thread "5create_explosion.cs" 1 10@  11@  12@  13@ 
-
-//    end             
-
+:free_lib_and_end_custom_thread 
+0AA3: free_library 0@       
+0A93: end_custom_thread
+ 
      
 :panik_unload
 0A93: end_custom_thread
@@ -161,6 +147,75 @@ return
   
 
 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  
 //:if_key_2
@@ -209,7 +264,7 @@ return
 //      then 
 //      01C2: remove_references_to_actor 1@  
 //      009B: destroy_actor 1@ 
-//      end 
+///w/      end 
 //      wait 0 
 //    end  
 //    
