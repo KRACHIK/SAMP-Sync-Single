@@ -7,8 +7,8 @@ set(cmake_runtime_output_directory ${CMAKE_HOME_DIRECTORY}/bin)
 project(client_EXE)
 
 file( GLOB SOURCE_CODE
-	C++/EXE_main.h
-	C++/EXE_main.cpp
+	sourse/EXE_main.h
+	sourse/EXE_main.cpp
 )
 source_group("" FILES ${SOURCE_CODE})
 
@@ -44,9 +44,11 @@ set(cmake_runtime_output_directory ${CMAKE_HOME_DIRECTORY}/bin)
 project(KRACHIK_client_Dll_2016)
 
 file( GLOB SOURCE_CODE
-	C++/DLL_client.cpp
-	C++/DLL_client.h
-	C++/DLL_main.cpp
+	sourse/DLL_client.cpp
+	sourse/DLL_client.h
+	sourse/DLL_main.cpp
+	sourse/PackedDecompose.cpp
+	sourse/PackedDecompose.h
 )
 source_group("" FILES ${SOURCE_CODE})
 
