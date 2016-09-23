@@ -81,7 +81,7 @@ UDPClient::UDPClient(
 	const std::string& host,
 	const std::string& port,
 	//UDPClient *ptrClient,
-	bool _fakeClientStartEXE
+	int _fakeClientStartEXE
 	) : io_service_(io_service), socket_(io_service, udp::endpoint(udp::v4(), 0)), fakeClientStartEXE(_fakeClientStartEXE)
 {
 	udp::resolver resolver(io_service_);
@@ -96,7 +96,7 @@ UDPClient::UDPClient(
 	boost::thread thereadRecov(&UDPClient::recov, this);
 	thereadRecov.detach();
 	Log("\'thereadRecov\' start");
-	 
+
 
 	boost::thread thrAntiKick(&UDPClient::thereadAntiKick, this);
 	thrAntiKick.detach();
@@ -104,7 +104,7 @@ UDPClient::UDPClient(
 
 	if (fakeClientStartEXE)
 	{
-		boost::thread thr_send_fake_pos(&UDPClient::thereadFakeGeneratePos, this, 13);
+		boost::thread thr_send_fake_pos(&UDPClient::thereadFakeGeneratePos, this, _fakeClientStartEXE);
 		thr_send_fake_pos.detach();
 		Log("\'thereadFakeGeneratePos\' start");
 	}
@@ -120,7 +120,7 @@ void	UDPClient::thereadAntiKick()
 		if (FlagExit()) break;
 		std::lock_guard<std::recursive_mutex> locker(_lock);
 		boost::this_thread::sleep(boost::posix_time::millisec(2700));
-		send("I online");
+		send("0"); // 0 = I online (for antikick)
 	}
 }
 
@@ -131,16 +131,45 @@ void	UDPClient::thereadFakeGeneratePos(int design)
 	{
 		std::lock_guard<std::recursive_mutex> locker(_lock);
 		if (FlagExit()) break;
-
+		
 		char buf[513];
-		sprintf_s(buf, sizeof(buf), "%f %d %d.%d %d.%d %d.%d %d.%d paket-%d",
-			66.0, 10, rand() % 6, 666, rand() % 100, 1, rand() % 100, 2, rand() % 20, 3, i);
-		std::string PACKED = buf;
-		std::cout <<"thereadFakeGeneratePos "<< PACKED << "\n";
-		++i;
-		send(PACKED);
-		boost::this_thread::sleep(boost::posix_time::millisec(4500));
 
+		switch (design)
+		{
+		case 1:
+		{	//	generate bigBang
+			sprintf_s(buf, sizeof(buf), "%f %d %d.%d %d.%d %d.%d %d.%d paket-%d",
+				66.0, 10, rand() % 6, 666, rand() % 100, 1, rand() % 100, 2, rand() % 20, 3, i);
+			std::string PACKED = buf;
+			std::cout << "thereadFakeGeneratePos " << PACKED << "\n";
+			++i;
+			send(PACKED);
+			boost::this_thread::sleep(boost::posix_time::millisec(4500));
+			break;
+		}
+
+		case 2: // fake pos
+		{
+			// design, x, y, z, angle, speed
+			sprintf_s(buf, sizeof(buf), "%d %d.%d %d.%d %d.%d %d.%d %d.%d",
+				/*design*/	65,
+				/*x*/		rand() % 100, 1,
+				/*y*/		rand() % 100, 1,
+				/*z*/		rand() % 100, 1,
+				/*angle*/	rand() % 360, 1,
+				/*speed*/	rand() % 6, 1
+
+				);
+			std::string PACKED = buf;
+			++i;
+			send(PACKED);
+			boost::this_thread::sleep(boost::posix_time::millisec(4500));
+			break;
+		}
+		default:
+			std::cout << "hz: " << design << "\n";
+			break;
+		}
 	}
 }
 
@@ -280,9 +309,9 @@ void	UDPClient::calculate_regular_parse_packed()
 				std::cout << "положить взрыв в стек" << "\n";
 				GTA_push_Explotion_to_Dot(token);
 
-			//case 65:
-			//	std::cout << "положить в стек новые координаты" << "\n";
-			//	GTA_push_obj_pos(token);
+				//case 65:
+				//	std::cout << "положить в стек новые координаты" << "\n";
+				//	GTA_push_obj_pos(token);
 
 			default:
 				break;
@@ -506,3 +535,53 @@ std::string getFindFileToken(std::string fileName, std::string findToken)
 
 //client	.setFlagCloseTheread();
 
+
+
+cVeh::cVeh()
+{
+	Log("cVeh()");
+}
+cVeh::~cVeh()
+{
+	Log("~cVeh()");
+}
+
+void cVeh::printHandleCar()
+{
+
+}
+void cVeh::InfoCarNew(int key, int GTA_HANDLE_CAR, int model, int heal, float x, float y, float z, float speed, int color_1, int color_2)
+{
+	auto it = std::find_if(m_veh_Handle_Map.begin(), m_veh_Handle_Map.end(),
+		[&key](const std::pair<int, struct Car> &p)
+	{
+		return p.first == key;
+	});
+
+	if (it != m_veh_Handle_Map.end())
+	{	// new info by client	
+		//(*it).second.last_ping = microsec_clock::local_time(); // update Ping
+	}
+	else
+	{// register 
+		Car tempBox;
+		tempBox.GTA_HANDLE_CAR = GTA_HANDLE_CAR;
+		tempBox.model = model;
+		tempBox.heal = heal;
+		tempBox.pos[0] = x;
+		tempBox.pos[1] = y;
+		tempBox.pos[2] = z;
+		tempBox.speed = 11.0f;
+		tempBox.color_1 = color_1;
+		tempBox.color_2 = color_2;
+
+		m_veh_Handle_Map.insert(std::pair<int, struct Car>(key, tempBox));
+	}
+}
+//std::map	<int, struct ClienInfo>		m_veh_Handle_Map;
+
+void Public_InfoMapCarNew(int key, int GTA_HANDLE_CAR, int model, int heal,
+	float x, float y, float z, float speed, int color_1, int color_2)
+{
+	Beep(333, 444);
+}

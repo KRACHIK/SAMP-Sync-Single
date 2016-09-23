@@ -27,7 +27,7 @@
 //#include <cstdarg>
 //#include <chrono>
 
-#define VERSION "build 34, version 0.0.1"
+#define VERSION "build 35, version 0.0.1"
 
 using boost::asio::ip::udp;
 
@@ -40,10 +40,10 @@ public:
 		boost::asio::io_service& io_service,
 		const std::string& host,
 		const std::string& port,
-	//	UDPClient *ptrClient,
-		bool _fakeClientStartEXE
+		//	UDPClient *ptrClient,
+		int _fakeClientStartEXE
 		);
-	 
+
 	~UDPClient();
 
 	//		funcs	while(true)
@@ -59,8 +59,8 @@ public:
 	void			setMsg(std::string _msg);
 	void			thereadFakeGeneratePos(int design);
 	void			GTA_read_stack(
-						float* idEmtyStack, float* k1, float* k2, float* k3,
-						float* k4, float* k5, float* k6, float* k7, float* k8);
+		float* idEmtyStack, float* k1, float* k2, float* k3,
+		float* k4, float* k5, float* k6, float* k7, float* k8);
 
 	//			compute
 	//----
@@ -96,12 +96,12 @@ protected:
 
 	bool	CLEO_stack_not_Emty();
 	bool	isValidCountParmsThisDesponsePaketSetPtrArrForFuncsCall(
-										std::string desponsePaket, int *PtrArr);
+		std::string desponsePaket, int *PtrArr);
 	bool	isValid_Count_prms_numeral_to_srs_paket(int _count);
 	void	calculate_regular_parse_packed();
 	void	GTA_push_obj_pos(std::string token);
 	void	GTA_push_Explotion_to_Dot(std::string token);
-	
+
 	std::string host;
 	std::string port;
 	std::string msg;
@@ -109,15 +109,30 @@ protected:
 	boost::asio::io_service& io_service_;
 	udp::socket socket_;
 	udp::endpoint endpoint_;
-	 
+
 	std::recursive_mutex _lock;
 
 	bool flag_close;
-	bool fakeClientStartEXE;
+	int  fakeClientStartEXE; // 0=cansel, 1=bigBang, = 2=clientFakePOs
 };
 
 UDPClient *ptrClient;
- 
+
+
+std::string getFindFileToken(std::string fileName, std::string findToken);
+std::string  getMeDirectory();
+
+extern "C" __declspec(dllexport) void printVersionProg();
+extern "C" __declspec(dllexport) void connect_to_server(int i);
+extern "C" __declspec(dllexport) void CLEO_connect_to_server_fon();
+extern "C" __declspec(dllexport) void Public_send_to_serv(std::string msg);
+extern "C" __declspec(dllexport) void Public_send_char_to_serv(char* msg);
+
+extern "C" __declspec(dllexport) void GTA_read_stack(
+	float* idEmtyStack, float* k1, float* k2, float* k3, float* k4, float* k5, float* k6, float* k7, float* k8);
+
+extern "C" __declspec(dllexport)  void Log(const char *fmt, ...);
+
 enum ConsoleColor
 {
 	Black = 0,
@@ -138,24 +153,32 @@ enum ConsoleColor
 	White = 15
 };
 
-std::string getFindFileToken(std::string fileName, std::string findToken);
-std::string  getMeDirectory();
-
-extern "C" __declspec(dllexport) void printVersionProg();
-extern "C" __declspec(dllexport) void connect_to_server(int i);
-extern "C" __declspec(dllexport) void CLEO_connect_to_server_fon();
-extern "C" __declspec(dllexport) void Public_send_to_serv(std::string msg);
-extern "C" __declspec(dllexport) void Public_send_char_to_serv(char* msg);
- 
-extern "C" __declspec(dllexport) void GTA_read_stack(
-	float* idEmtyStack, float* k1, float* k2, float* k3, float* k4, float* k5, float* k6, float* k7, float* k8);
-
-extern "C" __declspec(dllexport)  void Log(const char *fmt, ...);
 
 
+class cVeh{
+public:
+	cVeh();
+	~cVeh();
+	struct Car
+	{
+		int		GTA_HANDLE_CAR;
+		int		model;
+		int		heal;
+		
+		float	pos[2];
+		float	speed;
 
+		int		color_1;
+		int		color_2;
+	};
 
+	void printHandleCar();
+	void InfoCarNew(int key, int GTA_HANDLE_CAR, int model, int heal, float x, float y, float z, float speed, int color_1, int color_2);
+	std::map	<int, struct Car>		m_veh_Handle_Map;
+private:
+};
 
+void Public_InfoMapCarNew(int key, int GTA_HANDLE_CAR, int model, int heal, float x, float y, float z, float speed, int color_1, int color_2);
 
 
 
