@@ -4,82 +4,63 @@
 //#include <boost/date_time/posix_time/posix_time.hpp>
 #include "..//sourse/DLL_client.h"
 #include "EXE_main.h"
-#include <iostream>
-
+#include <iostream> 
+#include <string>
 #pragma comment(lib, "..//project/Release/client_Dll_2016.lib")          
+
+
 
 
 
 void thereadHandleConnect()
 {
+	printVersionProg();
 
-	std::cout << "enter \'1\' \t for GENERATE big bang" << "\n";
+	/*std::cout << "enter \'1\' \t for GENERATE big bang" << "\n";
 	std::cout << "enter \'2\' \t for GENERATE fake pos" << "\n";
 	std::cout << "enter \'3\' \t for Client onRead" << "\n";
 	std::cout << "enter \'4\' \t for Client onRead and send get car" << "\n";
 	std::cout << "enter \'5\' \t for getServerID && send FreeServerID" << "\n";
+	*/
 
-	int design;
-	std::cout << ">:";	std::cin >> design;
+	int design; std::cout << ">:";	std::cin >> design;
 
-	if (design == 1 || design == 2)
-	{
-		boost::thread thr_send_fake_pos(connect_to_server, design);
-		thr_send_fake_pos.detach();
-	}
 
-	if (design == 3)
-	{
-		CLEO_connect_to_server_fon();
-	}
+	boost::thread conect(Public_CLEO_connect_to_server_fon_NEW_September);
+	conect.detach();
 
-	if (design == 4)
-	{
-		CLEO_connect_to_server_fon();
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("100");
-		while (true)
-		{
-			boost::this_thread::sleep(boost::posix_time::millisec(3333));
-			Public_send_to_serv("100");
-		}
-	}
-	if (design == 5)
-	{
-		CLEO_connect_to_server_fon();
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("100");	// прошу сервер ид
 
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("100");  
+	const int MAX = 80;
 
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("100");
+	char buf[MAX];
 
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("100");
+	int i = 0;
+	
+	do{
+		std::cin >> buf[i];
+		i++;
+	} while (buf[i-1] != '/n');
 
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("100");
+	std::cout <<  buf;
+	 
+	std::cout << "я не вылЕтела" << "\n";
+	//Public_send_char_to_serv_NEW_September(buffer);
 
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("99 1");
-
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("99 0 ");
-
-		boost::this_thread::sleep(boost::posix_time::millisec(3333));
-		Public_send_to_serv("99 4");
-	}
+	//if (design == 1 || design == 2)
+	//{
+	//	boost::thread thr_send_fake_pos(connect_to_server, design);
+	//	thr_send_fake_pos.detach();
+	//}
 
 }
 
 int main(int argc, char *argv[])
 {
 	setlocale(LC_ALL, "Russian");
-	printVersionProg();
+
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)thereadHandleConnect, NULL, 0, 0);
-	boost::this_thread::sleep(boost::posix_time::millisec(2700));
+
+	boost::this_thread::sleep(boost::posix_time::millisec(12700));
 	std::cout << "end custom theread\n";
 	system("pause");
 	return 0;

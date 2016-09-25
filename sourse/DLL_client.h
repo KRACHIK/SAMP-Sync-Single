@@ -22,14 +22,74 @@
 
 #include <vector>
 #include <stack>
+#include <list>
+#include <map>
 
 //#include <stdarg.h>
 //#include <cstdarg>
 //#include <chrono>
 
-#define VERSION "build 35, version 0.0.1"
+#define VERSION "build 36, version 0.0.1"
 
 using boost::asio::ip::udp;
+
+
+class cDataBase_client
+{
+public:
+	void	computePacketToNormalize(std::string);
+
+	// ˜ÚÓ Ú‡ÍÓÂ idEmtyStack ?
+	void	GTA_read_stack(float* _1, float* _2, float* _3,float* _4,
+		float* _5, float* _6, float* _7, float* _8);
+
+	struct ClientMarker
+	{
+		float x;
+		float y;
+		float z;
+		int ServerMarkerID;
+		const int markerID = 62; // gruv street
+	};
+
+
+private:
+	std::list <float> m_parseValuePacket;
+	  
+	std::map <int, ClientMarker> m_CLEO_Marker_map;
+
+};
+
+// NEW 
+class ÒUDPClientGTA
+{
+
+public:
+	ÒUDPClientGTA(
+		boost::asio:: io_service& io_service, 
+		const std::string& host,
+		const std::string& port);
+
+	//	funcs	while(true)
+	void		recov();
+	void		thereadAntiKick(); // send I online ("0")
+	//	end
+
+	void		send(const std::string& msg);
+	  
+	std::shared_ptr			<cDataBase_client>			m_DataBasa;
+private:
+
+	std::string					host; 
+	std::string					port; 
+
+	boost::asio::io_service&	io_service_;
+	udp::socket					socket_;
+	udp::endpoint				endpoint_;
+	 
+};
+
+
 
 class UDPClient
 {
@@ -122,9 +182,16 @@ UDPClient *ptrClient;
 std::string getFindFileToken(std::string fileName, std::string findToken);
 std::string  getMeDirectory();
 
+
+// FOR use CLEO
+void	connect_to_server_private_GTA();
+extern "C" __declspec(dllexport) void Public_CLEO_connect_to_server_fon_NEW_September();
+extern "C" __declspec(dllexport) void Public_send_char_to_serv_NEW_September(char* msg);
+
 extern "C" __declspec(dllexport) void printVersionProg();
-extern "C" __declspec(dllexport) void connect_to_server(int i);
-extern "C" __declspec(dllexport) void CLEO_connect_to_server_fon();
+ 
+extern "C" __declspec(dllexport) void connect_to_server(int i); 
+
 extern "C" __declspec(dllexport) void Public_send_to_serv(std::string msg);
 extern "C" __declspec(dllexport) void Public_send_char_to_serv(char* msg);
 

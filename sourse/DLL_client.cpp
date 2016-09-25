@@ -19,6 +19,10 @@ uint32_t				g_dwSAMP_Addr = NULL;
 char					g_szSAMPVer[16];
 char					g_szWorkingDirectory[MAX_PATH];
 
+
+
+сUDPClientGTA *ptrClientGTA;
+
 extern "C" __declspec(dllexport)  void Log(const char *fmt, ...)
 {
 	strcpy(g_szWorkingDirectory, getMeDirectory().c_str());
@@ -66,6 +70,120 @@ extern "C" __declspec(dllexport)  void Log(const char *fmt, ...)
 	fprintf(g_flLogAll, "\n");
 	fflush(g_flLogAll);
 }
+void cDataBase_client::computePacketToNormalize(std::string paket)
+{
+	//	тут будут пропарсеная инфа
+	std::shared_ptr<std::list <double>> sharedLIst;						//	тут объявления указателя
+	sharedLIst = std::make_shared<std::list <double>>();				/* конструктор для типа через умный ptr */
+
+	boost::regex reg("(-+|)\\d+(,\\d+)*");								// умеет получать числа: ( отрицательные ) целые, дробные
+	for (boost::sregex_iterator it(paket.begin(), paket.end(), reg);
+		it != boost::sregex_iterator(); ++it)
+		sharedLIst->push_back(atof((*it).str().c_str()));				// ложим пропарсенные параметры в список
+
+	std::list<double>::iterator it = sharedLIst->begin();				// итератор на начало списка 
+
+	// (int)(*it) = firs number = byHost message;
+
+	it++; // if (iterator!= NULL) iterator = design 
+
+	if (!sharedLIst->empty())											// if список не пуст
+	{
+		switch (sharedLIst->size()) //int count_prms=sharedLIst->size();// свич по кол-ву аргументов
+		{
+			// if packet = hostBy? 
+			//I WILL PROBABLY USE FOR TRANSFER OF THE CONSTANT LINE OF TYPE PLAYER_ANIM_NAME
+		case 1: break;
+			//-------------------------------------
+
+		case 2:	break;
+			//-------------------------------------
+
+		case 3:	break;
+			//-------------------------------------
+
+		case 4:	break;
+			//-------------------------------------
+
+		case 5:	break;
+			//-------------------------------------
+
+		case 6: // 
+			if ((int)(*it) == 33) // 33 это design ServerMarker_ID
+			{
+
+			}
+			break;
+			//-------------------------------------
+
+		default: std::cout << "AHTUNG:" << "\n";  break;
+
+		}
+	}
+}
+
+//-------------------------------------
+
+
+сUDPClientGTA::сUDPClientGTA(
+	boost::asio::io_service& io_service,
+	const std::string& host,
+	const std::string& port) :
+	io_service_(io_service),
+	socket_(io_service, udp::endpoint(udp::v4(), 0))
+{
+	udp::resolver resolver(io_service_);
+	udp::resolver::query query(udp::v4(), host, port);
+	udp::resolver::iterator iter = resolver.resolve(query);
+	endpoint_ = *iter;
+
+	Log("%s", VERSION);
+
+	std::cout << "connect to " << host << ":" << port << "\n";
+
+	boost::thread thrAntiKick(&сUDPClientGTA::thereadAntiKick, this);
+	thrAntiKick.detach();
+	Log("\'сUDPClientGTA thereadAntiKick\' start");
+
+
+	boost::thread thereadRecov(&сUDPClientGTA::recov, this);
+	thereadRecov.detach();
+	Log("\'UDPClientGTA thereadRecov\' start");
+	
+
+	send("I new сUDPClientGTA ");
+}
+
+void	сUDPClientGTA::thereadAntiKick()
+{
+	while (true)
+	{
+		boost::this_thread::sleep(boost::posix_time::millisec(3000));
+		send("0"); // 0 = I online (for antikick)
+	}
+}
+ 
+void	сUDPClientGTA::send(const std::string& msg) {
+	socket_.send_to(boost::asio::buffer(msg, msg.size()), endpoint_);
+}
+
+void	сUDPClientGTA::recov()
+{
+	std::cout << "\nсUDPClientGTA::recov\n";
+	int i = 0;
+	char buff[1024];
+
+	while (true)
+	{
+		boost::this_thread::sleep(boost::posix_time::millisec(11));
+		int bytes = socket_.receive_from(boost::asio::buffer(buff), endpoint_);
+		std::string msg(buff, bytes);
+		std::cout << "<- " << msg << "\n";
+	}
+}
+
+
+//-------------------------------------
 
 
 UDPClient::~UDPClient()
@@ -131,7 +249,7 @@ void	UDPClient::thereadFakeGeneratePos(int design)
 	{
 		std::lock_guard<std::recursive_mutex> locker(_lock);
 		if (FlagExit()) break;
-		
+
 		char buf[513];
 
 		switch (design)
@@ -446,8 +564,6 @@ extern "C" __declspec(dllexport) void	CLEO_connect_to_server_fon()
 	Log("start \'CLEO_connect_to_server_fon\'");
 }
 
-
-
 extern "C" __declspec(dllexport) void	connect_to_server(int fakeClientStartEXE)
 {
 	boost::asio::io_service io_service;
@@ -468,6 +584,35 @@ extern "C" __declspec(dllexport) void	connect_to_server(int fakeClientStartEXE)
 	}
 	catch (std::exception& e){ std::cerr << e.what() << std::endl; }
 }
+
+
+extern "C" __declspec(dllexport) void	Public_CLEO_connect_to_server_fon_NEW_September() // CALL :A007
+{
+	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)connect_to_server_private_GTA, NULL, 0, 0);
+	Log("start \'CLEO_connect_to_server_fon_NEW_September\'");
+}
+void	connect_to_server_private_GTA()
+{
+	boost::asio::io_service io_service;
+	try
+	{
+		std::string ip = getFindFileToken("KRACHIK_setting.txt", "ip");
+		std::string port = getFindFileToken("KRACHIK_setting.txt", "port");
+
+		сUDPClientGTA player(io_service, ip, port);
+		ptrClientGTA = &player;
+
+		while (true)
+		{
+			boost::this_thread::sleep(boost::posix_time::seconds(1));
+		}
+
+	}
+	catch (std::exception& e){ std::cerr << e.what() << std::endl; }
+}
+
+
+
 //boost::this_thread::sleep(boost::posix_time::millisec(7000));
 
 extern "C" __declspec(dllexport) void	Public_send_to_serv(std::string msg)
@@ -482,6 +627,11 @@ extern "C" __declspec(dllexport) void	Public_send_char_to_serv(char* charmsg)
 	/*Log("\'Public_send_char_to_serv\' %s", charmsg);
 	Log("\'Public_send_char_to_serv\' pointer ptrClient  = 0x%x", ptrClient);*/
 	(*ptrClient).send(charmsg);
+}
+
+extern "C" __declspec(dllexport) void	Public_send_char_to_serv_NEW_September(char* charmsg)
+{
+	(*ptrClientGTA).send(charmsg);
 }
 
 extern "C" __declspec(dllexport) void	printVersionProg()
@@ -531,10 +681,6 @@ std::string getFindFileToken(std::string fileName, std::string findToken)
 
 	return "NULL";
 }
-
-
-//client	.setFlagCloseTheread();
-
 
 
 cVeh::cVeh()
