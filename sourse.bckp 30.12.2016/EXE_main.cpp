@@ -105,17 +105,6 @@ void VIRTUAL_CLEO_REALISTIC_DEBUG()
 
 }
 
-
-
-
-void TestPtrPtrCleo()
-{
-
-}
-
-
-
-
 int main(int argc, char *argv[])
 {
 	setlocale(LC_ALL, "Russian");
@@ -124,9 +113,7 @@ int main(int argc, char *argv[])
 	//while_thr.detach();
 
 	VIRTUAL_CLEO_REALISTIC_DEBUG();
-	 
-	TestPtrPtrCleo();
-	  
+
 	std::cin.get();
 	system("pause");
 	return 0;
