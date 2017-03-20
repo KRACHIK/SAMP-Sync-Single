@@ -9,8 +9,8 @@ int WINAPI DllMain(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 {
 	if (reason == DLL_PROCESS_ATTACH)
 	{
-		printf("\n[network] int WINAPI DllMain \n");
-		setlocale(LC_ALL, "Russian");
+		// printf("\n[network] int WINAPI DllMain \n\n\n\n");
+		//setlocale(LC_ALL, "Russian");
 	}
 	return 1;
 }

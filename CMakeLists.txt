@@ -6,8 +6,27 @@ set(cmake_archive_output_directory ${CMAKE_HOME_DIRECTORY}/bin)
 set(cmake_library_output_directory ${CMAKE_HOME_DIRECTORY}/bin)
 set(cmake_runtime_output_directory ${CMAKE_HOME_DIRECTORY}/bin)
 file( GLOB SOURCE_CODE
+	
 	sourse/EXE_main.h
 	sourse/EXE_main.cpp
+	
+	sourse/Virtual_CLEO/CLEO_connect.cpp
+	sourse/Virtual_CLEO/CLEO_connect.h
+	
+	sourse/Virtual_CLEO/CLEO_machine.cpp
+	sourse/Virtual_CLEO/CLEO_machine.h
+	
+	sourse/Virtual_CLEO/CLEO_reciver.cpp
+	sourse/Virtual_CLEO/CLEO_reciver.h
+	
+	sourse/Virtual_CLEO/CLEO_reg_heandle_from_Pool.cpp
+	sourse/Virtual_CLEO/CLEO_reg_heandle_from_Pool.h
+	
+	sourse/Virtual_CLEO/CLEO_send_request_car_spawn.cpp
+	sourse/Virtual_CLEO/CLEO_send_request_car_spawn.h
+	
+	sourse/Virtual_CLEO/CLEO_sender_self_pos.cpp
+	sourse/Virtual_CLEO/CLEO_sender_self_pos.h 
 )
 source_group("" FILES ${SOURCE_CODE})
 set(Boost_USE_STATIC_LIBS        ON)
@@ -36,19 +55,50 @@ set(cmake_library_output_directory ${CMAKE_HOME_DIRECTORY}/bin)
 set(cmake_runtime_output_directory ${CMAKE_HOME_DIRECTORY}/bin)
 
 file( GLOB SOURCE_CODE
-	sourse/UDP_network.cpp
-	sourse/UDP_network.h
-	
-	sourse/core.cpp
+   
 	sourse/core.h
+	sourse/core.cpp
+	   
+	sourse/input_output_cleo_prms.h
+	sourse/input_output_cleo_prms.cpp
 	
-	sourse/Object_List.cpp
-	sourse/Object_List.h
-	
-	sourse/MyUtiles.cpp
 	sourse/MyUtiles.h
+	sourse/MyUtiles.cpp
+	  
+	sourse/Output_Deque.h
+	sourse/Output_Deque.cpp
+	 
+	sourse/package_type.h
 	
-	sourse/DLL_main.cpp 
+	sourse/ELocal_command.h
+  
+	sourse/CLEO_manager.h
+	sourse/CLEO_manager.cpp
+   
+	sourse/Decisions_making.h
+	sourse/Decisions_making.cpp
+	
+	sourse/ServerPackage.h
+	sourse/ServerPackage.cpp
+	
+	sourse/ServerVehicle.h
+	sourse/ServerVehicle.cpp
+	
+	sourse/UDP_network.h
+	sourse/UDP_network.cpp
+	
+	sourse/Vehicle.h
+	sourse/Vehicle.cpp
+	
+	sourse/VehicleManager.h
+	sourse/VehicleManager.cpp 
+	
+	sourse/BaseRequest.h
+	sourse/BaseRequest.cpp 
+	
+	sourse/poolVehicleManager.h
+	sourse/poolVehicleManager.cpp 
+  
 )
 source_group("" FILES ${SOURCE_CODE})
 set(Boost_USE_STATIC_LIBS        ON)

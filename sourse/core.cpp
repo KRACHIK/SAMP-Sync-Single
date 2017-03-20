@@ -1,63 +1,46 @@
-﻿#include "core.h"
+﻿#pragma once
 
-std::shared_ptr<GameCore> glMyCLEO_Core;
+#include "core.h"
+#include "package_type.h"
+#include "ELocal_command.h"
 
-std::deque <c_OutputValue> gl_c_OutputValue_Deque_PRMS;
 
 GameCore::GameCore(c_Network_UDP* network) : m_network(network)
 {
 	std::cout << "[GameCore::GameCore] create!" << "\n";
+	Log("[GameCore::GameCore] create!");
 
 	m_ClientPassport = 443332211;
 
-	m_Veh_Manager = std::make_shared<c_VehicleManager>();
-
 	m_Design_Maker = std::make_shared<c_recov_Decisions>();
+
+	m_requestDataBase = std::make_shared<c_RequestDataBaseManager>();
 
 	boost::thread thrRecov(&GameCore::thrReciver, this);
 	thrRecov.detach();
+	m_network->Mysend("GameCore Init");
 }
 
 GameCore::~GameCore()
 {
+	// std::cout << "[GameCore::~GameCore()] Destroy!" << "\n";
 	m_utiles.~c_MyUtiles();
 }
 
 void GameCore::thrReciver()
 {
-	std::cout << "[GameCore::thrRecov()] start" << "\n";
+	// std::cout << "[GameCore::thrRecov()] start" << "\n";
 	while (true)
 	{
 		std::string package = (*m_network).recov();
 
-		std::cout << "[GameCore::thrReciver()] <- " << package << "\n";
+		std::cout << "package" << package << "\n";
 
-		m_Design_Maker->Decisions_Making_call_choice(package);
+		Log("\n\n[GameCore::thrReciver] size recov = %d \n", package.length());
 
-		// work code!
-		//if (package.length() >= 4)
-		//{
-		//	std::stringstream byteArr(package);
+		// std::cout << "[GameCore::thrReciver()]  size recov = ", package.length());
 
-		//	float fServerDesign = 0;
-
-		//	byteArr.read((char*)&fServerDesign, 4);
-
-		//	int iDesign = fServerDesign;
-
-		//	switch (iDesign)
-		//	{
-
-		//	case 2:
-		//		 
-		//		std::cout << "unBoxPackageVehicle unBoxPackageVehicle unBoxPackageVehicle unBoxPackageVehicle" << "\n";
-		//		unBoxPackageVehicle(byteArr, iDesign); // box prms for cleo
-		//		break;
-
-		//	default:
-		//		break;
-		//	}
-		//}
+		m_Design_Maker->new_parsing_package_2017(package);
 	}
 }
 
@@ -66,71 +49,93 @@ void GameCore::NetworkSend(char * msg)
 	(*m_network).Mysend(msg);
 }
 
-void GameCore::INPUT_Dim_ByCLEO(float A1, float A2, float A3, float A4, float A5, float A6, float A7)
+
+void GameCore::INPUT_Dim_ByCLEO(float A1, int iPrms1, int iPrms2, float A2, float A3, float A4, float A5, float A6, float A7, float A8, float A9, float A10)
 {
+	boost::this_thread::sleep(boost::posix_time::millisec(1));
+
 	// print input PRMS [debug] 
-	printf("[GameCore::INPUT_Dim_ByCLEO] %f %f %f %f %f \n", A1, A2, A3, A4, A5, A6, A7);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f %f %f %f %f %f %f \n", A1, A2, A3, A4, A5, A6, A7);
+	printf("\n[GameCore::INPUT_Dim_ByCLEO] %f %d %d %f %f %f %f %f %f %f \t", A1, iPrms1, iPrms2, A2, A3, A4, A5, A6, A7, A8, A9, A10);
+
+#if 1
+	Log(" ");
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A1);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %d", iPrms1);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %d", iPrms2);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A3);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A4);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A5);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A6);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A7);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A8);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A9);
+	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A10);
+#endif
 
 	int design = (int)A1;
+
+	std::shared_ptr	<c_BaseRequest> intitbaseRequest;
+	//switch input Network prms
 	switch (design)
 	{
-	case 1:
-		// hz
+		// get server info for car spawn
+	case static_cast <int> (EDESIGN_COMMAND::CMD_SPAWN_VEHICLE) :
+
+		intitbaseRequest = std::make_shared<c_REQUEST_GET_VEHICLE>((float)m_ClientPassport, A1, A2, A3, A4, A5, A6, A7, A8, A9);
+
+		Log("\n[input CleoAdminToolsSpawn] %f %f %f\t", A8, A9, A10);
+		 
+		m_requestDataBase->add(intitbaseRequest);
+
+		send_GetServCarID(A1, A2, A3, A4, A5, A6, A7); // -> design, fWant_Model , x, y, z, angle, speed
 		break;
 
-	case 2:
-		send_GetServCarID(A1, A2, A3, A4, A5); // -> design, fWant_Model , x, y, z
-		Log("[GameCore::INPUT_Dim_ByCLEO] sendGetServCarID %f %f %f %f %f \n", A1, A2, A3, A4, A5);
-		//Beep(500, 500);
+	case static_cast <int> (eHeaderPackage::RPC_PLAYER_ACTOR_POSSITIONS) :
+		sendSelfPositions(A1, A2, A3, A4, A5, A6);
+
+		/*intitbaseRequest = std::make_shared<c_REQUEST_SAY_SELF_POSSITIONS>((float)m_ClientPassport, A1, A2, A3, A4, A5, A6);
+		m_requestDataBase->add(intitbaseRequest);*/
 		break;
-
-	case 3:
-		//m_Veh_Manager->refresh_vehicle_map(
-		//	(int)A2		/*serverID*/
-		//	, (int)A3	/*model*/
-		//	, (int)A4	/*HeandleMemory*/
-		//	, A5		/*Pos */
-		//	, A6		/*Pos */
-		//	, A6		/*Pos */
-		//	);
-
-		int serverID;
-		int model;
-		int HeandleMemory;
-		float PosX;
-		float PosY;
-		float PosZ;
-
-		Log("[GameCore::INPUT_Dim_ByCLEO] refresh_vehicle_map "
-			"\n\t ServerID %f"
-			"\n\t Model %f"
-			"\n\t HeandleMemory %f"
-			"\n\t x %f"
-			"\n\t y %f"
-			"\n\t z %f"
-			"\n\t k %f"
-			, A2, A3, A4, A5, A6, A7);
-
-		Beep(1500, 100);
-		break;
-
+		  
 	default:
+		Log("[GameCore::INPUT_Dim_ByCLEO] case default design=%d", design);
 		break;
 	}
+
+
+	m_Design_Maker->m_CLEO_Manager->add_p(A1, iPrms1, iPrms2, A2, A3, A4, A5, A6, A7, A8, A9, A10);
+
+	m_Design_Maker->computeGameWord();
+
+
+#if 1
+	// send to server
+	if (!m_requestDataBase->emty())
+	{
+		(*m_network).Mysend(m_requestDataBase->getFirstMessageAndPopPackage());
+	}
+#endif
 }
 
-void GameCore::send_GetServCarID(float design, float want_ModelCar, float xPos, float yPos, float zPos)
+
+void GameCore::send_GetServCarID(float design, float want_ModelCar, float xPos, float yPos, float zPos, float angle, float speed)
 {
-	printf("[GameCore::send_GetServCarIDboxPrms]"
-		"\n\t design = %f"
-		"\n\t modelCar= %f "
-		"\n\t x= %f y= %f z= %f \n"
-		, design
-		, want_ModelCar
-		, xPos
-		, yPos
-		, zPos);
+	printf("[GameCore::send_GetServCarIDboxPrms] "
+		" design = %f"
+		" modelCar= %f "
+		" x= %f y= %f z= %f"
+		" angle %f"
+		" speed %f"
+		, design, want_ModelCar, xPos, yPos, zPos, angle, speed);
+
+	Log("[GameCore::send_GetServCarIDboxPrms] ");
+	Log(" design = %f", design);
+	Log(" modelCar = %f ", want_ModelCar);
+	Log(" x = %f ", xPos);
+	Log(" x = %f ", yPos);
+	Log(" x = %f ", zPos);
+	Log(" angle = %f", angle);
+	Log(" speed = %f\n\n", speed);
 
 	std::string package =
 		m_utiles.IntToHEX(m_ClientPassport)		// clientPassport
@@ -138,219 +143,82 @@ void GameCore::send_GetServCarID(float design, float want_ModelCar, float xPos, 
 		+ m_utiles.FloatToHEX(want_ModelCar)	// want ModelCar
 		+ m_utiles.FloatToHEX(xPos)				// xPos
 		+ m_utiles.FloatToHEX(yPos)				// yPos
-		+ m_utiles.FloatToHEX(zPos);			// zPos
+		+ m_utiles.FloatToHEX(zPos)				// zPos
+		+ m_utiles.FloatToHEX(angle)			// yPos
+		+ m_utiles.FloatToHEX(speed);			// zPos
 
 	(*m_network).Mysend(package);
 }
 
 
-
-
-void Init_UDP_Client()
+void GameCore::sendSelfPositions(float design, float x, float y, float z, float interior, float speed)
 {
-	std::string ip("127.0.0.1");	//getFindFileToken("KRACHIK_setting.txt", "ip");			
-	std::string port("7778");		//getFindFileToken("KRACHIK_setting.txt", "port");			
+	printf(" [GameCore::sendSelfPositions] ");
+	printf(" design = %f", design);
+	printf(" x = %f", x);
+	printf(" y = %f", y);
+	printf(" z = %f", z);
+	printf(" interior = %f ", interior);
 
-	std::cout << "[InitConnect] getFindFileToken ip: " << ip << "\n";
-	std::cout << "[InitConnect] getFindFileToken port: " << port << "\n";
+	Log("[GameCore::sendSelfPositions]");
+	Log("design = %f", design);
+	Log("x = %f", x);
+	Log("y = %f", y);
+	Log("z = %f\n", z);
+	Log("interior = %f", interior);
 
-	Log("[InitConnect] getFindFileToken ip: %s", ip.c_str());
-	Log("[InitConnect] getFindFileToken port: %s", port.c_str());
+	std::string package =
+		m_utiles.IntToHEX(m_ClientPassport)		// clientPassport
+		+ m_utiles.FloatToHEX(design) 			// design
+		+ m_utiles.FloatToHEX(x)				// xPos
+		+ m_utiles.FloatToHEX(y)				// yPos
+		+ m_utiles.FloatToHEX(z) 				// zPos
+		+ m_utiles.FloatToHEX(interior) 			// cuurrient Actor interior
+		+ m_utiles.FloatToHEX(speed);
 
-	boost::asio::io_service io_service;
-
-	// create Network object
-	c_Network_UDP player(io_service, ip, port);
-
-	// init core 
-	glMyCLEO_Core = std::make_shared<GameCore>(&player);
-	Beep(2000, 100);
-	// for glMyCLEO_Core not deatch
-	while (true)
-	{
-		//std::cout << "[thr void Public_Init_UDP_Client()]" << "\n";
-		boost::this_thread::sleep(boost::posix_time::seconds(4));
-		//glMyCLEO_Core->NetworkSend("REG");
-	}
-}
-
-extern "C" __declspec(dllexport) void Init_Client_backgraund_Thr() // CALL :A007
-{
-	std::cout << "[void Init_Client_backgraund_Thr]" << "\n";
-	Log("[void Init_Client_backgraund_Thr]");
-
-	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Init_UDP_Client, NULL, 0, 0);
-	boost::this_thread::sleep(boost::posix_time::seconds(1));
-}
-
-extern "C" __declspec(dllexport) void Public_InPutDimByCLEO(float* A1, float* A2, float* A3, float* A4, float* A5, float* A6, float* A7)
-{
-	Log("[extern void Public_InPutDimByCLEO] \n\t prms = (%f %f %f %f %f %f %f)\n"
-		, *A1, *A2, *A3, *A4, *A5, *A6, *A7);
-
-	printf("[extern void Public_InPutDimByCLEO] \n\t prms = (%f %f %f %f %f)\n"
-		, *A1, *A2, *A3, *A4, *A5, *A6, *A7);
-
-	glMyCLEO_Core->INPUT_Dim_ByCLEO(*A1, *A2, *A3, *A4, *A5, *A6, *A7);
-}
-
-extern "C" __declspec(dllexport) void Public_OUTPUT_DimByCLEO(float* A1, float* A2, float* A3, float* A4, float* A5, float* A6, float* A7)
-{
-	// read stack Box package
-	*A1 = 0;
-	*A2 = 0;
-	*A3 = 0;
-	*A4 = 0;
-	*A5 = 0;
-	*A6 = 0;
-	*A7 = 0;
-
-	//Beep(200, 200);
-
-	if (!gl_c_OutputValue_Deque_PRMS.empty())
-	{
-		switch (gl_c_OutputValue_Deque_PRMS[0].iDesign)
-		{
-		case 2:
-			if (gl_c_OutputValue_Deque_PRMS[0].iServID != -1)
-			{
-				Log("[extern void Public_OUTPUT_DimByCLEO] case 2");
-				*A1 = (float)gl_c_OutputValue_Deque_PRMS[0].iDesign;
-				*A2 = (float)gl_c_OutputValue_Deque_PRMS[0].iServID;
-				*A3 = (float)gl_c_OutputValue_Deque_PRMS[0].iModel;
-				*A4 = gl_c_OutputValue_Deque_PRMS[0].fX;
-				*A5 = gl_c_OutputValue_Deque_PRMS[0].fY;
-				*A6 = gl_c_OutputValue_Deque_PRMS[0].fZ;
-				// *A7 not reliz angle;
-
-				gl_c_OutputValue_Deque_PRMS.pop_front(); 	// delete 
-			}
-			break;
-
-		default:
-			std::cout << "[void Public_OUTPUT_DimByCLEO] default" << "\n";
-			Log("[void Public_OUTPUT_DimByCLEO] default");
-			break;
-		}	// end switch
-
-		// print Info [debug]
-
-		Log("[extern void Public_OUTPUT_DimByCLEO]"
-			"\n\t prms_1: '%f'"
-			"\n\t prms_2: '%f'"
-			"\n\t prms_3: '%f'"
-			"\n\t prms_4: '%f'"
-			"\n\t prms_5: '%f'"
-			"\n\t prms_6: '%f'"
-			, *A1, *A2, *A3, *A4, *A5, *A6, *A7);
-
-		printf("[extern void Public_OUTPUT_DimByCLEO]"
-			"\n\t prms_1: '%f'"
-			"\n\t prms_2: '%f'"
-			"\n\t prms_3: '%f'"
-			"\n\t prms_4: '%f'"
-			"\n\t prms_5: '%f'"
-			"\n\t prms_6: '%f'"
-			"<- [CLEO]\n"
-			, *A1, *A2, *A3, *A4, *A5, *A6, *A7);
-	}	// end  if(!gl_Queue_PRMS.empty())
-
-}
-
-extern "C" __declspec(dllexport) void Public_TestDebug(float* fPrms, int* Iprms)
-{
-	float a1, a2;
-	int b1, b2;
-
-	a1 = *fPrms;
-	a2 = *Iprms;
-
-	b1 = *fPrms;
-	b2 = *Iprms;
-
-	Log("[void Public_TestDebug] fPrms %f iPrms %f, fPrms %d iPrms %d", a1, a2, b1, b2);
-}
-
-c_recov_Decisions::c_recov_Decisions()
-{
-	std::cout << "[c_recov_Decisions::c_recov_Decisions] create" << "\n";
-	Log("[c_recov_Decisions::c_recov_Decisions] create");
-}
-
-c_recov_Decisions::~c_recov_Decisions()
-{
-	std::cout << "[c_recov_Decisions::~c_recov_Decisions] destroy" << "\n";
-	Log("[c_recov_Decisions::~c_recov_Decisions] destroy");
-}
-
-void c_recov_Decisions::Decisions_Making_call_choice(const std::string& input_Hex_Package)
-{
-	if (input_Hex_Package.length() >= 4) // size 1 prms = 4 byte
-	{
-		std::stringstream byteArr(input_Hex_Package);
-
-		float fDesign = 0;
-
-		byteArr.read((char*)&fDesign, 4);
-
-		int iDesign = fDesign;
-
-		switch (iDesign)
-		{
-
-		case 2:
-			Add_Vehicle_Queue_PRMS(byteArr, iDesign); // box prms for cleo
-			break;
-
-		default:
-			break;
-		}
-	}
-}
-
-// for read Cleo Script
-void c_recov_Decisions::Add_Vehicle_Queue_PRMS(std::stringstream& byteArr, int iDecisions_making)
-{
-	// control size byteArr if (byteArr.size() == ? )
-
-	int serverID, iModel;;
-	float X, Y, Z;
-
-	byteArr.read((char*)&serverID, 4);
-	byteArr.read((char*)&iModel, 4);
-	byteArr.read((char*)&X, 4);
-	byteArr.read((char*)&Y, 4);
-	byteArr.read((char*)&Z, 4);
-
-	c_OutputValue tmp;
-
-	tmp.iDesign = iDecisions_making;
-	tmp.iServID = serverID;
-	tmp.iModel = iModel;
-	tmp.fX = X;
-	tmp.fY = Y;
-	tmp.fZ = Z;
-
-	gl_c_OutputValue_Deque_PRMS.push_back(tmp);
+	(*m_network).Mysend(package);
 }
 
 
+void GameCore::sendPotential_place_to_spawn_car(float design, float model, float x, float y, float z, float angle, float speed)
+{
+	/*initCleoDim(8.0f, 1L, 1L, model, x, y, z, angle, speed);*/
+
+	printf("[GameCore::sendPotential_place_to_spawn_car] ");
+	printf("design = %f", design);
+	printf("x = %f", x);
+	printf("y = %f", y);
+	printf("z = %f\t", z);
+
+	Log("[GameCore::sendPotential_place_to_spawn_car]\n");
+	Log("design = %f", design);
+	Log("x = %f", x);
+	Log("y = %f", y);
+	Log("z = %f\n", z);
+
+	std::string package =
+		m_utiles.IntToHEX(m_ClientPassport)		// clientPassport
+		+ m_utiles.FloatToHEX(design) 			// design
+		+ m_utiles.FloatToHEX(model)
+		+ m_utiles.FloatToHEX(x)				// xPos
+		+ m_utiles.FloatToHEX(y)				// yPos
+		+ m_utiles.FloatToHEX(z)  				// zPos
+		+ m_utiles.FloatToHEX(angle)
+		+ m_utiles.FloatToHEX(speed);
+
+	(*m_network).Mysend(package);
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void GameCore::_TEST_send_admin_cmd(float design, const std::string & messaga)
+{
+	std::cout << "[GameCore::_TEST_send_admin_cmd] " << "\n";
+	std::string package =
+		m_utiles.IntToHEX(m_ClientPassport)		// clientPassport
+		+ m_utiles.FloatToHEX(design) 			// design
+		+ messaga;
+	(*m_network).Mysend(package);
+}
 
 
 

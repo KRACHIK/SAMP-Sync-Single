@@ -1,169 +1,108 @@
-﻿#include <iostream>
-#include "core.h"
-#pragma comment(lib, "..//project/Release/SAMP++.lib")          
+﻿#pragma once 
+
+#define Hello "this is my test client 0.0.0.3"
+
+#include "Virtual_CLEO\CLEO_send_request_car_spawn.h"
+#include "Virtual_CLEO\CLEO_reg_heandle_from_Pool.h"
+#include "Virtual_CLEO\CLEO_sender_self_pos.h"
+#include "Virtual_CLEO\CLEO_connect.h"
+#include "Virtual_CLEO\CLEO_reciver.h"
+
+#include "VehicleManager.h"
 
 
 
+TEST_CLEO_SELF_POSITIONS_SENDER			SELF_POS_SENDER;
+TEST_GET_CAR_INFO_for_SPAWN				test_get_car_info_FOR_spawn;
+TEST_CLEO_connect_to_server				cleo_connect;
+TEST_CLEO_Reciver						CLEO_RECIVER_SCRIPT;
+TEST_CLEO_REQUET_GET_HEANDLE_OF_PO0L	send_Get_Heandle_Vehicle;
 
-void VIRTUAL_CLEO_MASHINE()
+void TEST_CLEO_CONNECT()
 {
-	std::cout << "VIRTUAL_CLEO_MASHINE is Start" << "\n";
-
-	float fPRMS_1 = 2.0;
-	float fPRMS_2 = 0;
-	float fPRMS_3 = 0;
-	float fPRMS_4 = 0;
-	float fPRMS_5 = 0;
-	float fPRMS_6 = 0;
-	float fPRMS_7 = 0;
-
-	float * ptr1 = &fPRMS_1;
-	float * ptr2 = &fPRMS_2;
-	float * ptr3 = &fPRMS_3;
-	float * ptr4 = &fPRMS_4;
-	float * ptr5 = &fPRMS_5;
-	float * ptr6 = &fPRMS_6;
-	float * ptr7 = &fPRMS_7;
-
-	while (true)
-	{
-		// fPRMS_1 = 2.0; => getServerCarID
-		Public_OUTPUT_DimByCLEO(ptr1, ptr2, ptr3, ptr4, ptr5, ptr6, ptr7);
-
-		boost::this_thread::sleep(boost::posix_time::millisec(50));
-	}
+	std::cout << "EXE connect start" << "\n";
+	cleo_connect.connect();
 }
 
-void VIRTUAL_CLEO_REALISTIC_DEBUG()
+
+void TEST_CLEO_RECIVER()
 {
-	Init_Client_backgraund_Thr();		// connect to server
+	CLEO_RECIVER_SCRIPT.start();
+}
 
-	//	cleo DIM
-	float fPRMS_1 = 0.0f;
-	float fPRMS_2 = 0.0f;
-	float fPRMS_3 = 0.0f;
-	float fPRMS_4 = 0.0f;
-	float fPRMS_5 = 0.0f;
-	float fPRMS_6 = 0.0f;
-	float fPRMS_7 = 0.0f;
+void TEST_SENDER_SELF_POSSITIONS()
+{
+	SELF_POS_SENDER.startThr_Self_Pos();
+}
 
-	float * ptr1 = &fPRMS_1;
-	float * ptr2 = &fPRMS_2;
-	float * ptr3 = &fPRMS_3;
-	float * ptr4 = &fPRMS_4;
-	float * ptr5 = &fPRMS_5;
-	float * ptr6 = &fPRMS_6;
-	float * ptr7 = &fPRMS_7;
-
-	// SEND GET CAR SPAWN
-	fPRMS_1 = 2.0;		// design
-	fPRMS_2 = 411;		// wantModel
-	fPRMS_3 = 11.1f;	// x
-	fPRMS_4 = 12.2f;	// y
-	fPRMS_5 = 13.3f;	// z
-	fPRMS_6 = 12.2f;	// y
-	fPRMS_7 = 13.3f;	// z
-	Public_InPutDimByCLEO(ptr1, ptr2, ptr3, ptr4, ptr5, ptr6, ptr7);
+void TEST_REQUEST_CAR_SPAWN()
+{
+	test_get_car_info_FOR_spawn.request_car_spawn(); 
+}
+	
 
 
 
-	// read reciver DataStack
-	boost::this_thread::sleep(boost::posix_time::millisec(1150));
+void Test_Get_Heandle_Car()
+{
+	send_Get_Heandle_Vehicle.START_Thr_Get_Heandle_of_Pool ();
+}
+							  
 
-	Public_OUTPUT_DimByCLEO(ptr1, ptr2, ptr3, ptr4, ptr5, ptr6, ptr7);
-	if ((int)*ptr1 == 2)
+
+#if 0 
+std::shared_ptr	<c_VehicleManager> VehManager = std::make_shared<c_VehicleManager>();
+void TEST_STL_DLL_CONTAINER()
+{
+	std::cout << "[TEST_STL_DLL_CONTAINER]" << "\n";
+
+	int countVehicle = 10;
+
+	for (int i = 0; i < countVehicle; i++)
 	{
-		printf("[VIRTUAL_CLEO_REALISTIC_DEBUG]->"
-			"\n\t prms_1: design '%f'"
-			"\n\t prms_2: serverCarID '%f'"
-			"\n\t prms_3: model'%f'"
-			"\n\t prms_4: x'%f'"
-			"\n\t prms_5: y'%f'"
-			"\n\t prms_6: z'%f'"
-			"<- [VIRTUAL_CLEO_REALISTIC_DEBUG]\n"
-			, *ptr1
-			, *ptr2
-			, *ptr3
-			, *ptr4
-			, *ptr5
-			, *ptr6
-			, *ptr7
-			);
+		float  fServerID = i;
+		float fModel = rand() % 100;
+		float x = rand() % 100;
+		float y = rand() % 100;
+		float z = rand() % 100;
+		float fAngle = rand() % 100;
+		float fSpeed = rand() % 100;
 
-		//refresh_vehicle_map(int serverID, int model, int iHeandle, float x, float y, float z);
+		c_ServerVehicle vehForBox(fServerID, fModel, x, y, z, fAngle, fSpeed);
 
-		*ptr1 = 3.0; // design init HeandleMemory
-		*ptr7 = 1123456;
-		Public_InPutDimByCLEO(ptr1, ptr2, ptr3, ptr7, ptr4, ptr5, ptr6);
-
+		VehManager->refreshServerMap(vehForBox);
 	}
 
-	//// read reciver DataStack
-	Public_OUTPUT_DimByCLEO(ptr1, ptr2, ptr3, ptr4, ptr5, ptr6, ptr7);
-	Public_OUTPUT_DimByCLEO(ptr1, ptr2, ptr3, ptr4, ptr5, ptr6, ptr7);
-	Public_OUTPUT_DimByCLEO(ptr1, ptr2, ptr3, ptr4, ptr5, ptr6, ptr7);
-
+	std::cout << "count ServerVehicle = " << VehManager->getSizeServerVehicle() << "\n";
 }
-
-
-
-
-void TestPtrPtrCleo()
-{
-
-}
-
-
+#endif
 
 
 int main(int argc, char *argv[])
 {
-	setlocale(LC_ALL, "Russian");
+	setlocale(LC_ALL, "");
 
-	//boost::thread while_thr(VIRTUAL_CLEO_MASHINE);
-	//while_thr.detach();
+	std::cout << "" << Hello << "\n";
 
-	VIRTUAL_CLEO_REALISTIC_DEBUG();
-	 
-	TestPtrPtrCleo();
+#if 1
+	TEST_CLEO_CONNECT();
+
+	TEST_SENDER_SELF_POSSITIONS(); 
+
+	boost::this_thread::sleep(boost::posix_time::millisec(1750));
+
+	TEST_REQUEST_CAR_SPAWN();
+
+	TEST_CLEO_RECIVER();
+	    
+	Test_Get_Heandle_Car(); 
+	//MessageBoxA(0, "void main", "", 0);
+
+#endif
 	  
-	std::cin.get();
+
 	system("pause");
+
 	return 0;
 }
-
-//void testQueue()
-//{
-//#include <deque>
-//#include <stack>
-//#include "Object_List.h"
-//
-//	std::deque <c_OutputValue> gl_Queue_PRMS;
-//
-//	for (int i = 0; i < 3; i++)
-//	{
-//		c_OutputValue  tmp;
-//		tmp.iDesign = 2 + i;
-//		tmp.iModel = 411 + i;
-//		gl_Queue_PRMS.push_back(tmp);
-//	}
-//	while (!gl_Queue_PRMS.empty())
-//	{
-//		// UnBox
-//		int design = gl_Queue_PRMS[0].iDesign;
-//		int model = gl_Queue_PRMS[0].iModel;
-//
-//		std::cout << "--------------------" << "\n";
-//		std::cout << "model " << model << "\n";
-//		std::cout << "design " << design << "\n";
-//
-//		// delete
-//		gl_Queue_PRMS.pop_front();
-//	}
-//	std::cout << "в контейнеере осталось: " << gl_Queue_PRMS.size() << " элементов" << "\n";
-//
-//
-//
-//}
-
 
