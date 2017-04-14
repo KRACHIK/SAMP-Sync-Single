@@ -13,8 +13,11 @@ void TEST_CLEO_SELF_POSITIONS_SENDER::ThrInit_Dim_for_send_Pos_2()
 	while (true)
 	{
 		x += m_step_x;	y += m_step_y;
-		 
+
 		//call sendSelfPositions(float design, float interior, float x, float y, float z, float speed);
+		//std::cout << "[TEST_CLEO_SELF_POSITIONS_SENDER::ThrInit_Dim_for_send_Pos_2]"  << "\n";
+		// std::cout << " x = " << x << "\n";
+		// std::cout << " y = " << y << "\n";
 
 		initCleoDim((float)eHeaderPackage::RPC_PLAYER_ACTOR_POSSITIONS, -1L, -1L, x, y, z, fInterior, fSpeed, -1
 			, -1.0f
@@ -24,7 +27,7 @@ void TEST_CLEO_SELF_POSITIONS_SENDER::ThrInit_Dim_for_send_Pos_2()
 
 		Call_00A5_send_to_DLL();
 
-		boost::this_thread::sleep(boost::posix_time::millisec(1101));
+		boost::this_thread::sleep(boost::posix_time::millisec(4101));
 	}
 }
 

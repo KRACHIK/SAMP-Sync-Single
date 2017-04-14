@@ -3,6 +3,7 @@
 c_RequestDataBaseManager::c_RequestDataBaseManager()
 {
 	std::cout << "[c_SendRequestDataBase::c_SendRequestDataBase] create! " << "\n";
+	Log("[c_SendRequestDataBase::c_SendRequestDataBase] create! ");
 }
 
 
@@ -18,10 +19,10 @@ std::string c_RequestDataBaseManager::getFirstMessageAndPopPackage()
 	if (!emty())
 	{
 		sendRequest = m_sendPackagedeque[0]->getMsg();
-		
+
 		pop();
 	}
-	  
+
 	return sendRequest;
 }
 
@@ -86,8 +87,8 @@ void c_REQUEST_SAY_SELF_POSSITIONS::init()
 
 std::string c_REQUEST_SAY_SELF_POSSITIONS::getMsg()
 {
-	std::cout << "[c_REQUEST_SAY_SELF_POSSITIONS::getMsg()]" << "\n";
-	Log("[c_REQUEST_SAY_SELF_POSSITIONS::getMsg()]");
+	//std::cout << "[c_REQUEST_SAY_SELF_POSSITIONS::getMsg()]" << "\n";
+	//Log("[c_REQUEST_SAY_SELF_POSSITIONS::getMsg()]");
 
 	return m_sendPackage;
 }
@@ -105,30 +106,42 @@ c_REQUEST_GET_VEHICLE::c_REQUEST_GET_VEHICLE(float ClientPassport, float design
 	, m_angle(angle)
 	, m_speed(speed)
 	, m_fColor1(color1)
-	, m_fColor2(color2) 
-	{
-		init();
-	}
+	, m_fColor2(color2)
+{
+	init();
+}
 
-		void c_REQUEST_GET_VEHICLE::init()
-	{
-		c_MyUtiles m_utiles;
+void c_REQUEST_GET_VEHICLE::init()
+{
+	c_MyUtiles m_utiles;
 
-		m_sendPackage =
-			m_utiles.IntToHEX(m_fClientPassport)		// clientPassport
-			+ m_utiles.FloatToHEX(m_design) 			// design
-			+ m_utiles.FloatToHEX(m_want_ModelCar)	// want ModelCar
-			+ m_utiles.FloatToHEX(m_xPos)				// xPos
-			+ m_utiles.FloatToHEX(m_yPos)				// yPos
-			+ m_utiles.FloatToHEX(m_zPos)				// zPos
-			+ m_utiles.FloatToHEX(m_angle)			// yPos
-			+ m_utiles.FloatToHEX(m_speed)			// zPos
-			+ m_utiles.FloatToHEX(m_fColor1)			
-			+ m_utiles.FloatToHEX(m_fColor2);			
-	}
+	m_sendPackage =
+		m_utiles.IntToHEX(m_fClientPassport)		// clientPassport
+		+ m_utiles.FloatToHEX(m_design) 			// design
+		+ m_utiles.FloatToHEX(m_want_ModelCar)	// want ModelCar
+		+ m_utiles.FloatToHEX(m_xPos)				// xPos
+		+ m_utiles.FloatToHEX(m_yPos)				// yPos
+		+ m_utiles.FloatToHEX(m_zPos)				// zPos
+		+ m_utiles.FloatToHEX(m_angle)			// yPos
+		+ m_utiles.FloatToHEX(m_speed)			// zPos
+		+ m_utiles.FloatToHEX(m_fColor1)
+		+ m_utiles.FloatToHEX(m_fColor2);
 
 
-	std::string c_REQUEST_GET_VEHICLE::getMsg()
-	{
-		return m_sendPackage;
-	}
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_design));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_fClientPassport));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_want_ModelCar));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_xPos));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_yPos));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_zPos));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_angle));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_speed));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_fColor1));
+	Log("[INIT_PACKAGE_c_REQUEST_GET_VEHICLE] STEP_0 %f", (m_fColor2));
+}
+	  
+
+std::string c_REQUEST_GET_VEHICLE::getMsg()
+{
+	return m_sendPackage;
+}

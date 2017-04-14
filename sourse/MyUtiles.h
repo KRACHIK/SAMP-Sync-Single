@@ -25,6 +25,8 @@ private:
 
 std::string  getMeDirectory();
 
+std::string getFindFileToken(std::string fileName, std::string findToken);
+
 void Log(const char *fmt, ...);
 void LogFile(const char *fmt, ...);
 

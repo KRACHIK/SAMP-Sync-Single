@@ -29,8 +29,8 @@ std::string c_Network_UDP::recov()
 	std::string msg(buff, bytes);
 
 	//Log("[c_Network_UDP::recov] %s", buff);
-
-	 std::cout << "\n [c_Network_UDP::recov] reciver " << bytes << " byte"   ;
+	
+	std::cout << "\n [c_Network_UDP::recov] reciver " << bytes << " byte" << " sockPort = " << socket_.local_endpoint() << " ";
 	  
 	if (bytes < 1024){
 		return msg;

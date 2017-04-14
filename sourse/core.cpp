@@ -34,7 +34,7 @@ void GameCore::thrReciver()
 	{
 		std::string package = (*m_network).recov();
 
-		std::cout << "package" << package << "\n";
+		//std::cout << "package" << package << "\n";
 
 		Log("\n\n[GameCore::thrReciver] size recov = %d \n", package.length());
 
@@ -55,21 +55,21 @@ void GameCore::INPUT_Dim_ByCLEO(float A1, int iPrms1, int iPrms2, float A2, floa
 	boost::this_thread::sleep(boost::posix_time::millisec(1));
 
 	// print input PRMS [debug] 
-	printf("\n[GameCore::INPUT_Dim_ByCLEO] %f %d %d %f %f %f %f %f %f %f \t", A1, iPrms1, iPrms2, A2, A3, A4, A5, A6, A7, A8, A9, A10);
+	//printf("\n[GameCore::INPUT_Dim_ByCLEO] %f %d %d %f %f %f %f %f %f %f \t", A1, iPrms1, iPrms2, A2, A3, A4, A5, A6, A7, A8, A9, A10);
 
-#if 1
+#if 0
 	Log(" ");
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A1);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %d", iPrms1);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %d", iPrms2);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A3);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A4);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A5);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A6);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A7);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A8);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A9);
-	Log("[GameCore::INPUT_Dim_ByCLEO] %f", A10);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 1=%f", A1);
+	Log("[GameCore::INPUT_Dim_ByCLEO] i1=%d", iPrms1);
+	Log("[GameCore::INPUT_Dim_ByCLEO] i2=%d", iPrms2);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 2=%f", A3);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 3=%f", A4);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 4=%f", A5);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 5=%f", A6);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 6=%f", A7);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 7=%f", A8);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 8=%f", A9);
+	Log("[GameCore::INPUT_Dim_ByCLEO] 9=%f", A10);
 #endif
 
 	int design = (int)A1;
@@ -87,7 +87,7 @@ void GameCore::INPUT_Dim_ByCLEO(float A1, int iPrms1, int iPrms2, float A2, floa
 		 
 		m_requestDataBase->add(intitbaseRequest);
 
-		send_GetServCarID(A1, A2, A3, A4, A5, A6, A7); // -> design, fWant_Model , x, y, z, angle, speed
+		//send_GetServCarID(A1, A2, A3, A4, A5, A6, A7); // -> design, fWant_Model , x, y, z, angle, speed
 		break;
 
 	case static_cast <int> (eHeaderPackage::RPC_PLAYER_ACTOR_POSSITIONS) :
@@ -153,12 +153,12 @@ void GameCore::send_GetServCarID(float design, float want_ModelCar, float xPos, 
 
 void GameCore::sendSelfPositions(float design, float x, float y, float z, float interior, float speed)
 {
-	printf(" [GameCore::sendSelfPositions] ");
-	printf(" design = %f", design);
-	printf(" x = %f", x);
-	printf(" y = %f", y);
-	printf(" z = %f", z);
-	printf(" interior = %f ", interior);
+//	printf(" [GameCore::sendSelfPositions] ");
+//	printf(" design = %f", design);
+//	printf(" x = %f", x);
+//	printf(" y = %f", y);
+//	printf(" z = %f", z);
+//	printf(" interior = %f \n", interior);
 
 	Log("[GameCore::sendSelfPositions]");
 	Log("design = %f", design);
@@ -177,6 +177,8 @@ void GameCore::sendSelfPositions(float design, float x, float y, float z, float 
 		+ m_utiles.FloatToHEX(speed);
 
 	(*m_network).Mysend(package);
+
+	Beep(200, 100);
 }
 
 

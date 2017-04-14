@@ -8,12 +8,15 @@
 
 #include "package_type.h"
 
+
 c_VehicleManager::c_VehicleManager()
 {
 	std::cout << "[c_VehicleManager] create!" << "\n";
 
 	m_VehPoolManager = std::make_shared<c_CLEO_Object_pool>();
+	m_DynamicMemoryManager = std::make_shared<c_DynamicMemoryManager>(13); // 13*4 = 52 byte
 }
+
  
 bool c_VehicleManager::findClientVehicleMap(c_ServerVehicle vehicle)
 {

@@ -1,13 +1,17 @@
 #include "MyUtiles.h"
 #include <windows.h>
 
-FILE	*g_flLog = NULL;
-
+#include <cstdlib> //for double atof( const char * string );
+#include <cstdio>
+#include <cmath>
+#include <fstream>
+ 
 void MyMsgBox(const std::string msg, const std::string msg2)
 {
 
 }
 
+FILE	*g_flLog = NULL;
 FILE	*g_flLogAll = NULL;
 
 char	g_szSAMPVer[16];
@@ -38,29 +42,59 @@ std::string c_MyUtiles::ToHEX(float Arr[], size_t size)
 	return Package;
 }
 
-
 std::string c_MyUtiles::IntToHEX(int Value)
 {
 	std::string tmpStr((char*)&Value, 4);
 	return tmpStr;
 }
 
-
 std::string c_MyUtiles::FloatToHEX(float Value)
 {
 	std::string tmpStr((char*)&Value, 4);
 	return tmpStr;
 }
-
-
-
-
+  
 std::string  getMeDirectory()
 {
 	char buffer[MAX_PATH];
 	GetCurrentDirectory(sizeof(buffer), buffer);
 	std::string str(buffer);
 	return str;
+}
+ 
+std::string getFindFileToken(std::string fileName, std::string findToken)
+{
+	std::string line = getMeDirectory() + "\\" + fileName;
+	std::ifstream myfile(line);
+	line = "";
+	size_t pos;
+	bool flag = false;
+	if (myfile.is_open())
+	{
+		while (myfile.good())
+		{
+			getline(myfile, line);
+			pos = line.find(findToken);
+			if (pos != std::string::npos){
+				flag = true;
+				pos += findToken.length();
+				break;
+			}
+		}
+		myfile.close();
+	}
+	else
+		Log("File \'%s\' not found ", fileName.c_str());
+
+
+	if (flag){
+		std::string rez(line, pos + 1, line.length());
+		return rez;
+	}
+	else
+		Log("token \'%s\' not found ", findToken.c_str());
+
+	return "NULL";
 }
 
 
@@ -111,8 +145,7 @@ void Log(const char *fmt, ...)
 	fprintf(g_flLogAll, "\n");
 	fflush(g_flLogAll);
 }
-
-
+ 
 void LogFile(const char *fmt, ...)
 {
 	strcpy(g_szWorkingDirectory, getMeDirectory().c_str());

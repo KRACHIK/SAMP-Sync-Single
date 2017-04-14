@@ -6,9 +6,7 @@
 #include <thread>
 
 #include "core.h"
-
-//#include "package_type.h"
-
+ 
 
 void Init_UDP_Client();
 
@@ -24,6 +22,6 @@ extern "C" __declspec(dllexport) void Public_InPutDimByCLEO(
 
 extern "C" __declspec(dllexport) void Public_OUTPUT_DimByCLEO(float* A1, float* A2, float* A3, float* A4, float* A5
 	, float* A6, float* A7, float * A8, float * A9, float * A10);
-
+ 
 #endif  
 // 

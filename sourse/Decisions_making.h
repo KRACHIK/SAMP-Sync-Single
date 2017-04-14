@@ -22,6 +22,8 @@
 
 #include "VehicleManager.h"
 
+#include "GTA_SA_DynamicMemoryManager.h"
+
 class c_recov_Decisions
 {
 public:
@@ -35,10 +37,10 @@ public:
 
 	void new_parsing_package_2017(std::string package);
 
+	void read(std::stringstream byteArr);
+	  
 	//void reg_car_heandle();
-
 	//void GET_HEANDLE_CAR_OF_POOL();
-
 	/*void isCLEO_ScriptSpawnedVehicle(float fModel, float fServID, float fX,
 		float fY, float fZ, float fAngle, float fSpeed, float fHeandle);*/
 
@@ -57,6 +59,8 @@ public:
 
 	std::shared_ptr	<c_CLEO_commandManager> m_CLEO_Manager;
 
+	/*std::shared_ptr	<c_DynamicMemoryManager> m_DynamicMemoryManager;
+*/
 private:
 
 };

@@ -29,8 +29,8 @@ void TEST_GET_CAR_INFO_for_SPAWN::request_car_spawn()
 		, 30.0f						//  posZ Const
 		, 45.45f					//  angle
 		, 99.99f					//  hz 
-		, 178.0f // color_1
-		, 179.0f // color_1
+		, 126.0f // color_1
+		, 126.0f // color_1
 		, -1.0f
 		);					// speed
 

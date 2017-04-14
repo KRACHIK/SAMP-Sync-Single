@@ -13,28 +13,7 @@
  
 #include <vector> 
 
-
-
-
-//
-//class cObject
-//{
-//public:
-//	cObject(float _fHeandle);
-//public:
-//	float m_fHeandle;
-//
-//};
-//
-//class c_floatValue
-//{
-//public:
-//	c_floatValue(float _fHeandle);
-//public:
-//	float m_fHeandle;
-//
-//};
-  
+    
 class c_CLEO_Object_pool
 {
 public:

@@ -27,6 +27,7 @@ void TEST_SPAWN_AND_REG_CAR_DATABASE::regCarbyheandle()
 //--------------------------------------------------
 
 
+#if 0
 void TEST_CLEO_REQUET_GET_HEANDLE_OF_PO0L::Get_Heandle_of_Pool()
 {
 	srand(time(0));
@@ -61,7 +62,7 @@ void TEST_CLEO_REQUET_GET_HEANDLE_OF_PO0L::START_Thr_Get_Heandle_of_Pool()
 	boost::thread thrGetCarHeandle = boost::thread(&TEST_CLEO_REQUET_GET_HEANDLE_OF_PO0L::Get_Heandle_of_Pool, this);
 	thrGetCarHeandle.detach();
 }
-
+#endif 
 //--------------------------------------------------
 
 

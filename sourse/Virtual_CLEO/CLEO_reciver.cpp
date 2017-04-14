@@ -78,6 +78,38 @@ void TEST_CLEO_Reciver::isRecovCommandVehicleSpawn()
 		/* fPrms_9 */, *m_ptr10 // color_2
 		);
 
+	/*if (m_ptr3 != nullptr && *m_ptr3 != -1)
+	{
+		float* pTmpDim = m_ptr3;
+
+		float val = *pTmpDim;
+		pTmpDim += 4;
+		
+		std::cout << "Yeah  = " << val << "\n";
+			
+		pTmpDim += 4; val = *pTmpDim;
+		std::cout << "Yeah  = " << val << "\n";
+
+		pTmpDim += 4; val = *pTmpDim;
+		std::cout << "Yeah  = " << val << "\n";
+
+		pTmpDim += 4; val = *pTmpDim;
+		std::cout << "Yeah  = " << val << "\n";
+
+		pTmpDim += 4; val = *pTmpDim;
+		std::cout << "Yeah  = " << val << "\n";
+
+		pTmpDim += 4; val = *pTmpDim;
+		std::cout << "Yeah  = " << val << "\n";
+
+		pTmpDim += 4; val = *pTmpDim;
+		std::cout << "Yeah  = " << val << "\n";
+
+		pTmpDim += 4; val = *pTmpDim;
+		std::cout << "Yeah  = " << val << "\n";
+
+	}*/
+
 	m_Test_IheandleVehicle_exe++;
 
 	test_spawn_and_reg_car_database.Call_00A5_send_to_DLL();

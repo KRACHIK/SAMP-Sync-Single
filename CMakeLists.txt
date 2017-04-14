@@ -27,6 +27,9 @@ file( GLOB SOURCE_CODE
 	
 	sourse/Virtual_CLEO/CLEO_sender_self_pos.cpp
 	sourse/Virtual_CLEO/CLEO_sender_self_pos.h 
+	
+	sourse/Virtual_CLEO/CLEO_send_requestCarOfLocalPool.cpp
+	sourse/Virtual_CLEO/CLEO_send_requestCarOfLocalPool.h 
 )
 source_group("" FILES ${SOURCE_CODE})
 set(Boost_USE_STATIC_LIBS        ON)
@@ -98,7 +101,11 @@ file( GLOB SOURCE_CODE
 	
 	sourse/poolVehicleManager.h
 	sourse/poolVehicleManager.cpp 
-  
+ 
+	sourse/GTA_SA_DynamicMemoryManager.h
+	sourse/GTA_SA_DynamicMemoryManager.cpp 
+ 
+ 
 )
 source_group("" FILES ${SOURCE_CODE})
 set(Boost_USE_STATIC_LIBS        ON)

@@ -14,18 +14,7 @@ public:
 
 public:
 
-	void  writeDebugLogDim()
-	{
-		Log("[c_ClientVehicle::writeDebugLogDim] heandle %f", m_fHeandle);
-		Log("[c_ClientVehicle::writeDebugLogDim] ServId %f", m_fServerID);
-		Log("[c_ClientVehicle::writeDebugLogDim] Model %f", m_fModel);
-		Log("[c_ClientVehicle::writeDebugLogDim] x %f", m_fX);
-		Log("[c_ClientVehicle::writeDebugLogDim] y %f", m_fY);
-		Log("[c_ClientVehicle::writeDebugLogDim] z %f", m_fZ);
-
-		Log("[c_ClientVehicle::writeDebugLogDim] color1 %f", m_fColor_1);
-		Log("[c_ClientVehicle::writeDebugLogDim] color2 %f", m_fColor_2);
-	}
+	void  writeDebugLogDim();
 
 	float m_fHeandle = -1.0f;
 	float m_fServerID = -1.0f;
@@ -36,6 +25,8 @@ public:
 
 	float m_fColor_1 = -1.0f;
 	float m_fColor_2 = -1.0f;
+
+	float* m_pMyBuffer;
 };
 
 
