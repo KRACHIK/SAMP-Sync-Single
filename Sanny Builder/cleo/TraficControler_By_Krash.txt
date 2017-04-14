@@ -1,0 +1,117 @@
+// This file was decompiled using SASCM.ini published by GTAG (http://gtag.gtagaming.com/opcode-database) on 14.6.2013
+{$CLEO .cs}
+
+//-------------MAIN---------------
+0662: printstring "SCRIPT_TRAFFIC_CONTROL_BY_[_KRASH_]" 
+thread "TRAFFICSCRIPTLOLKA" 
+
+:TRAFFICSCRIPTLOLKA_61
+wait 0 
+if and
+   Player.Defined($PLAYER_CHAR)
+0ADC:   test_cheat "TRAFFIC" 
+else_jump @TRAFFICSCRIPTLOLKA_61 
+wait 0 
+0826: enable_hud 0 
+0581: enable_radar 0 
+03BF: set_player $PLAYER_CHAR ignored_by_everyone 1 
+Player.CanMove($PLAYER_CHAR) = False
+08D4: $MENU = create_panel_with_title 'DUMMY' position 29.0 170.0 width 300.0 columns 2 interactive 1 background 1 alignment 1 
+08DB: set_panel $MENU column 0 header 'DUMMY' data 'TRAFF' 'TRAF1' 'TRAF2' 'TRAF3' 'TRAF4' 'TRAF5' 'TRAF6' 'DUMMY' 'DUMMY' 'DUMMY' 'DUMMY' 'DUMMY' 
+08D6: set_panel $MENU column 1 alignment 1 
+09DB: set_panel $MENU column 0 width 150 
+09DB: set_panel $MENU column 1 width 150 
+
+:TRAFFICSCRIPTLOLKA_308
+wait 0 
+if 
+00E1:   player 0 pressed_key 16 
+else_jump @TRAFFICSCRIPTLOLKA_344 
+08D7: 0@ = panel $MENU active_row 
+jump @TRAFFICSCRIPTLOLKA_401 
+
+:TRAFFICSCRIPTLOLKA_344
+wait 0 
+if 
+00E1:   player 0 pressed_key 15 
+else_jump @TRAFFICSCRIPTLOLKA_308 
+0826: enable_hud 1 
+0581: enable_radar 1 
+03E6: remove_text_box 
+08DA: remove_panel $MENU 
+Player.CanMove($PLAYER_CHAR) = True
+03BF: set_player $PLAYER_CHAR ignored_by_everyone 0 
+jump @TRAFFICSCRIPTLOLKA_61 
+
+:TRAFFICSCRIPTLOLKA_401
+wait 0 
+if 
+  0@ == 0 
+else_jump @TRAFFICSCRIPTLOLKA_464 
+01EB: set_traffic_density_multiplier_to 0.0 
+03DE: set_pedestrians_density_multiplier_to 0.0 
+018C: play_sound 1052 at 0.0 0.0 0.0 
+jump @TRAFFICSCRIPTLOLKA_308 
+
+:TRAFFICSCRIPTLOLKA_464
+wait 0 
+if 
+  0@ == 1 
+else_jump @TRAFFICSCRIPTLOLKA_527 
+01EB: set_traffic_density_multiplier_to 1.0 
+03DE: set_pedestrians_density_multiplier_to 1.0 
+018C: play_sound 1052 at 0.0 0.0 0.0 
+jump @TRAFFICSCRIPTLOLKA_308 
+
+:TRAFFICSCRIPTLOLKA_527
+wait 0 
+if 
+  0@ == 2 
+else_jump @TRAFFICSCRIPTLOLKA_590 
+01EB: set_traffic_density_multiplier_to 2.0 
+03DE: set_pedestrians_density_multiplier_to 2.0 
+018C: play_sound 1052 at 0.0 0.0 0.0 
+jump @TRAFFICSCRIPTLOLKA_308 
+
+:TRAFFICSCRIPTLOLKA_590
+wait 0 
+if 
+  0@ == 3 
+else_jump @TRAFFICSCRIPTLOLKA_653 
+01EB: set_traffic_density_multiplier_to 3.0 
+03DE: set_pedestrians_density_multiplier_to 3.0 
+018C: play_sound 1052 at 0.0 0.0 0.0 
+jump @TRAFFICSCRIPTLOLKA_308 
+
+:TRAFFICSCRIPTLOLKA_653
+wait 0 
+if 
+  0@ == 4 
+else_jump @TRAFFICSCRIPTLOLKA_716 
+01EB: set_traffic_density_multiplier_to 4.0 
+03DE: set_pedestrians_density_multiplier_to 4.0 
+018C: play_sound 1052 at 0.0 0.0 0.0 
+jump @TRAFFICSCRIPTLOLKA_308 
+
+:TRAFFICSCRIPTLOLKA_716
+wait 0 
+if 
+  0@ == 5 
+else_jump @TRAFFICSCRIPTLOLKA_779 
+01EB: set_traffic_density_multiplier_to 5.0 
+03DE: set_pedestrians_density_multiplier_to 5.0 
+018C: play_sound 1052 at 0.0 0.0 0.0 
+jump @TRAFFICSCRIPTLOLKA_308 
+
+:TRAFFICSCRIPTLOLKA_779
+wait 0 
+if and
+  0@ == 6 
+0AAB:   file_exists "CLEO\TRAFFICC.INI" 
+else_jump @TRAFFICSCRIPTLOLKA_401 
+0AF2: 3@ = get_float_from_ini_file "CLEO\TRAFFICC.INI" section "TRAFFICC" key "YN" 
+wait 1 
+01EB: set_traffic_density_multiplier_to 3@ 
+03DE: set_pedestrians_density_multiplier_to 3@ 
+018C: play_sound 1052 at 0.0 0.0 0.0 
+jump @TRAFFICSCRIPTLOLKA_308 

@@ -3,31 +3,37 @@
 #ifndef C_DYNAMIC_MEMORY_MANAGER_FOR_GTA_SA_EXE_H
 #define C_DYNAMIC_MEMORY_MANAGER_FOR_GTA_SA_EXE_H
 
-//class c_ClientVehicle; // head v cpp
+
+
+#define GTA_SA_EXE_CLASS_CPool_Vehicle	 0xB74494
+
+
 #include "Vehicle.h"
 
 #include <windows.h>
 
 #include "MyUtiles.h"
 
-class c_DynamicMemoryManager
+
+
+class CMemoeyManager_gta_saExe
 {
-public:
-	c_DynamicMemoryManager(int m_CountElementsSize4byte);
-
-	void DebugPringBuffer(float* Arr);
-			 
-
-
-	bool  getStatusBigBang();
+public: 
 
 	float* CreateBuffer();
-
 	void AttachBufferToGameVehicleStruct(DWORD* MyBuffer, c_ClientVehicle &GameStruct);
+	void DebugPringBuffer(float* Arr);
+	 
 
+	bool IsRunGTA();
+
+	int GetMaxCountVehileOfPool();
+	int GetVehicleCurreentSizePool();
+
+	void FlameFirstVehicleOfPool();
 private:
-	int m_CountElementsSize4Byte;
-
+ 
+	int m_CountElementsSize4Byte = -1;
 };
 
 #endif  

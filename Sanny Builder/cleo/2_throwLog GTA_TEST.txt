@@ -1,0 +1,60 @@
+{$CLEO .cs}
+
+0662: "HookSampChat"
+0000: NOP  
+
+
+// SAMP HOOK CHAT
+const 
+    m_PtrLibSampChat            = 5@
+    m_PTR_MAIN_FUNCSSAMP_CHAT   = 6@
+    m_PTR_PRINT_MESSAGE         = 7@
+    m_INT_GEREEN_COLOR          = 8@
+    m_LibName_SAMPHOOKCHATDLL = "SampHookChat.dll"       
+end 
+ 
+:StupedPrintMessage 
+repeat
+    wait 1000
+until player.Defined(0)
+   
+wait 0
+if
+    0AA2: m_PtrLibSampChat = load_library m_LibName_SAMPHOOKCHATDLL  
+then
+    if 
+        0AA4: m_PTR_MAIN_FUNCSSAMP_CHAT = get_proc_address "initDllFuncs" library m_PtrLibSampChat // IF and SET
+    then                     
+    // for auto call void main {}
+        0AA5: call m_PTR_MAIN_FUNCSSAMP_CHAT num_params 0 pop 0     
+        
+        // init color message
+        0092: m_INT_GEREEN_COLOR = float m_INT_GEREEN_COLOR to_integer
+        m_INT_GEREEN_COLOR = 3393434934 // hz kak poluchilos (green color)        
+ 
+        // get pointer my funcs
+        if 
+            0AA4: m_PTR_PRINT_MESSAGE = get_proc_address "MyChatMSG" library m_PtrLibSampChat // IF and SET
+        then              
+            // [debug] print info                       
+            00A0: store_actor $PLAYER_ACTOR position_to $TEMPVAR_FLOAT_1 $TEMPVAR_FLOAT_2 $TEMPVAR_FLOAT_3
+                                 
+            0AD3: string 23@v "HeadPackage=%d  RPC_PLAYER_POSSITIONS_ON_CITY OR VEHICLO CITY" 13688
+            0AA5: call m_PTR_PRINT_MESSAGE num_params 2 pop 2 m_INT_GEREEN_COLOR 23@v 
+            018C: play_sound 1052 at 0.0 0.0 0.0
+                       
+        END                                             
+    end      
+end  
+0AA3: free_library m_PtrLibSampChat          
+0A93: end_custom_thread
+
+
+
+
+
+
+
+
+
+

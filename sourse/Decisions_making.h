@@ -36,9 +36,7 @@ public:
 	~c_recov_Decisions();
 
 	void new_parsing_package_2017(std::string package);
-
-	void read(std::stringstream byteArr);
-	  
+	 
 	//void reg_car_heandle();
 	//void GET_HEANDLE_CAR_OF_POOL();
 	/*void isCLEO_ScriptSpawnedVehicle(float fModel, float fServID, float fX,
@@ -59,8 +57,8 @@ public:
 
 	std::shared_ptr	<c_CLEO_commandManager> m_CLEO_Manager;
 
-	/*std::shared_ptr	<c_DynamicMemoryManager> m_DynamicMemoryManager;
-*/
+ 	std::shared_ptr	<CMemoeyManager_gta_saExe> m_GTA_SAMemoryManager;
+
 private:
 
 };

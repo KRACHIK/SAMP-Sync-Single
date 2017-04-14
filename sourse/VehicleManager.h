@@ -44,9 +44,6 @@ public:
 	bool c_VehicleManager::isVehicleInitCorrect(c_ClientVehicle &vehicle);
 	  				  
 	std::shared_ptr	<c_CLEO_Object_pool> m_VehPoolManager;
-	std::shared_ptr	<c_DynamicMemoryManager> m_DynamicMemoryManager;
-
-
 private:
 	std::map <int, c_ClientVehicle>	m_clientVehicleMap;
 	std::map <int, c_ServerVehicle>	m_serverVehicleMap;

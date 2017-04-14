@@ -3,16 +3,9 @@
 #include <iostream>
 #include <assert.h>
 
-c_DynamicMemoryManager::c_DynamicMemoryManager(int sizeBuffer) : m_CountElementsSize4Byte(sizeBuffer)
-{
-	bool f = true;
 
-	//assert(f == false);
 
-	std::cout << "[c_DynamicMemoryManager::c_DynamicMemoryManager()] Create!" << "\n";
-}
-
-void c_DynamicMemoryManager::DebugPringBuffer(float* Arr)
+void CMemoeyManager_gta_saExe::DebugPringBuffer(float* Arr)
 {
 	assert(Arr != nullptr);
 
@@ -35,13 +28,101 @@ void c_DynamicMemoryManager::DebugPringBuffer(float* Arr)
 	}
 }
 
-bool c_DynamicMemoryManager::getStatusBigBang()
+bool CMemoeyManager_gta_saExe::IsRunGTA()
 {
+	HWND hWnd = FindWindow(NULL, "GTA:SA:MP");
+	if (hWnd == NULL)
+		return false;
 
-	return false;
+	//if (IsIconic(hWnd)) return false; // если окно найдено но свернто 
+	return true;
 }
 
-float* c_DynamicMemoryManager::CreateBuffer()
+int CMemoeyManager_gta_saExe::GetMaxCountVehileOfPool()
+{
+	DWORD* m_p1_BaseVehiclePool;
+
+	DWORD* m_BaseVehiclePoolCuurrentSize;
+
+	m_p1_BaseVehiclePool = (DWORD*)0xB74494;
+	m_BaseVehiclePoolCuurrentSize = (DWORD*)(*m_p1_BaseVehiclePool + 0x8);
+	return *m_BaseVehiclePoolCuurrentSize;
+}
+
+int CMemoeyManager_gta_saExe::GetVehicleCurreentSizePool()
+{
+
+	DWORD* m_p1_BaseVehiclePool;
+	DWORD* m_p2_BaseVehiclePool;
+	DWORD* m_BaseVehiclePoolCuurrentSize;
+
+	m_p1_BaseVehiclePool = (DWORD*)0xB74494;	//0A8D: 28@ = read_memory 0xB74494 size 4 virtual_protect 0 // Указатель на первый элемент в пуле транспорта 
+
+	m_p2_BaseVehiclePool = (DWORD*)(*m_p1_BaseVehiclePool); // 0A8D: 28@ = read_memory 28@ size 4 virtual_protect 0
+
+	m_BaseVehiclePoolCuurrentSize = (DWORD*)(*m_p1_BaseVehiclePool + 0xC);
+
+	Log("[CMemoeyManager_gta_saExe::GetVehicleCurreentSizePool] VehiclePoolCuurrentSize =  %d ", *m_BaseVehiclePoolCuurrentSize);
+
+	return *m_BaseVehiclePoolCuurrentSize;
+}
+
+
+
+void CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool()
+{
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool]");
+
+	int CountVehicle = GetVehicleCurreentSizePool();
+
+	/*
+	не робит
+	if (CountVehicle > 0)
+	{
+		DWORD *pDVehiclePool;
+
+		pDVehiclePool = (DWORD*)0xB74494;
+
+		DWORD *NextElement;
+
+		for (int i = 0; i < CountVehicle - 1; i++)
+		{
+			NextElement = (DWORD*)*pDVehiclePool;
+
+			//...
+			float* HealthVehicle;
+
+			HealthVehicle = (float*)(*NextElement + 0x4C0);
+
+			Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] *HealthVehicle = %f, NextElement = %d *NextElement = %d\n", *HealthVehicle, NextElement, *NextElement);
+
+			// действие
+			pDVehiclePool = (DWORD*)*pDVehiclePool + 0xA18;
+		}
+	}*/
+
+
+#if 0 // робит. но только с первой найденой тачкой 
+	DWORD *pDVehiclePool;
+	pDVehiclePool = (DWORD*)0xB74494;
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] pDVehiclePool %d  *pDVehiclePool = %d", pDVehiclePool, *pDVehiclePool);
+	DWORD *firstElement;
+	firstElement = (DWORD*)*pDVehiclePool;
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] firstElement %d  *firstElement = %d", firstElement, *firstElement);
+	float* HealthVehicle;
+	HealthVehicle = (float*)(*firstElement + 0x4C0);
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] *firstElement + 0x4C0 = %d  ", *firstElement + 0x4C0);
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] HealthVehicle = %f", *HealthVehicle);
+	// *HealthVehicle = 1.0f;
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] Set HealthVehicle = %f", *HealthVehicle);
+#endif
+
+
+}
+
+
+
+float* CMemoeyManager_gta_saExe::CreateBuffer()
 {
 	float *Arr = new float[m_CountElementsSize4Byte];
 
@@ -69,7 +150,7 @@ public:
 	void FixLags();
 };
 
-void c_DynamicMemoryManager::AttachBufferToGameVehicleStruct(DWORD* MyBuffer, c_ClientVehicle &GameStruct)
+void CMemoeyManager_gta_saExe::AttachBufferToGameVehicleStruct(DWORD* MyBuffer, c_ClientVehicle &GameStruct)
 {
 	Log("[c_DynamicMemoryManager::AttachBufferToGameVehicleStruct(] kill");
 
@@ -84,7 +165,7 @@ void c_DynamicMemoryManager::AttachBufferToGameVehicleStruct(DWORD* MyBuffer, c_
 	//Log("[c_DynamicMemoryManager::AttachBufferToGameVehicleStruct] CarHealch! %f", *p);
 }
 
- 
+
 
 CPed::CPed()
 {
@@ -96,10 +177,10 @@ void CPed::Kill()
 
 	if (Base != NULL)
 	{
-		if (Health == NULL) 
+		if (Health == NULL)
 			Health = (float*)(*Base + 0x540);
 
-		if (Armour == NULL) 
+		if (Armour == NULL)
 			Armour = (float*)(*Base + 0x548);
 
 		*Health = 0.0;
@@ -114,7 +195,7 @@ void CPed::SetHealth(float hp)
 		if (Health == NULL) Health = (float*)(*Base + 0x540);
 		if (hp < 0.0)hp = 0.0;
 		if (hp > 100.0)hp = 100.0;
- 		*Health = hp;
+		*Health = hp;
 	}
 }
 void CPed::SetArmour(float ar)
@@ -144,5 +225,4 @@ void CPed::FixLags()
 		*Y -= 1000.0;
 		*Z -= 1000.0;
 	}
-} 
- 
+}

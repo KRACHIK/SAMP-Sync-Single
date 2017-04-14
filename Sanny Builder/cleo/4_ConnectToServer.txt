@@ -1,0 +1,126 @@
+  
+{$CLEO .cs} 
+
+const
+    SCRIPT_NAME  =   "CoonnectToServer"
+    scritpPath   =   "cleo\CoonnectToServer.ini"
+ 
+        
+end
+ 
+const 
+    _FLAG_START                             =       0@
+    _Library                                =       1@      // load .dll
+    _Init_Client_backgraund_Thr             =       2@
+    
+end
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~
+const   // SAMP HOOK CHAT 
+    m_PtrLibSampChat            = 5@
+    m_PTR_MAIN_FUNCSSAMP_CHAT   = 6@
+    m_PTR_PRINT_MESSAGE         = 7@
+    m_INT_GEREEN_COLOR          = 8@
+    m_LibName_SAMPHOOKCHATDLL = "SampHookChat.dll"       
+end // spawn vehicle
+//~~~~~~~~~~~~~~~~~~~~~~~~~~
+   
+ 
+0000: 
+ 
+// flag start
+if          
+    0@ == 1
+then
+    goto @initcializatciia 
+else
+    goto @panik_unload    
+end
+ 
+:initcializatciia
+   // load .dll
+    if                                  
+        0AA2: _Library = load_library "SAMP++.dll"    
+    jf @panik_unload
+        0AF1: write_int _Library to_ini_file scritpPath section SCRIPT_NAME key "SAMP++"   
+    
+    
+    // get ptr "Init_Client_backgraund_Thr"     
+    if
+        0AA4: _Init_Client_backgraund_Thr = get_proc_address "Init_Client_backgraund_Thr" library _Library  
+    jf @free_lib_and_end_custom_thread
+    
+    //CONNECT to SERVER
+           
+    0AF1: write_int _Init_Client_backgraund_Thr to_ini_file scritpPath section SCRIPT_NAME key "Init_Client_backgraund_Thr"  
+       
+    0AA5: call _Init_Client_backgraund_Thr  num_params 0 pop 0  
+     
+    0AD3: string 23@v "[%d_ConnectToSeerver] call backgraund_Thr" 4
+    gosub @SAMP_PRINT_MSG_GOSUB     
+     
+    0AD1: show_formatted_text_highpriority   "CONNECT TO SERVER: (ptr funcs %d)" time 2222 _Init_Client_backgraund_Thr
+    wait 2000 
+    
+    
+    
+    
+    0A92:create_custom_thread "4_reciver_old.cs" 1 _Library
+    0A92:create_custom_thread "4_PlayerActorPossittions.cs" 1  
+0A93: end_custom_thread
+ 
+      
+:free_lib_and_end_custom_thread 
+ 
+0AA3: free_library 0@       
+0A93: end_custom_thread
+ 
+     
+:panik_unload           
+ 
+0A93: end_custom_thread    
+
+
+
+
+
+
+:SAMP_PRINT_MSG_GOSUB
+repeat
+    wait 1000
+until player.Defined(0)
+   
+wait 0
+if
+    0AA2: m_PtrLibSampChat = load_library m_LibName_SAMPHOOKCHATDLL  
+then
+    if 
+        0AA4: m_PTR_MAIN_FUNCSSAMP_CHAT = get_proc_address "initDllFuncs" library m_PtrLibSampChat // IF and SET
+    then                     
+    // for auto call void main {}
+        0AA5: call m_PTR_MAIN_FUNCSSAMP_CHAT num_params 0 pop 0     
+        
+        // init color message
+        0092: m_INT_GEREEN_COLOR = float m_INT_GEREEN_COLOR to_integer
+        m_INT_GEREEN_COLOR = 3393434934 // hz kak poluchilos (green color)        
+ 
+        // get pointer my funcs
+        if 
+            0AA4: m_PTR_PRINT_MESSAGE = get_proc_address "MyChatMSG" library m_PtrLibSampChat // IF and SET
+        then              
+            // [debug] print info                       
+                                   
+//            0AD3: string 23@v "%d_Admin_tool_v2.cs is init!" 4
+            0AA5: call m_PTR_PRINT_MESSAGE num_params 2 pop 2 m_INT_GEREEN_COLOR 23@v 
+            018C: play_sound 1052 at 0.0 0.0 0.0
+                       
+            0AA3: free_library m_PtrLibSampChat
+        END                                             
+    end      
+end  
+return 
+          
+     
+    

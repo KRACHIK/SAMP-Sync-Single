@@ -1,0 +1,26 @@
+{$CLEO .cs} 
+ 
+0000: 
+
+if
+    0@ == 1
+then
+    goto @initcializatciia 
+else
+    0A93: end_custom_thread    
+end
+
+
+ 
+:initcializatciia
+while true
+wait 0
+    if 
+       Player.Defined($PLAYER_CHAR)
+    then    
+       
+        018C: play_sound 1@ at 0.0 0.0 0.0
+          
+    end
+end 
+ 

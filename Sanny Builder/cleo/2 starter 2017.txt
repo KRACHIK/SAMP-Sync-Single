@@ -1,0 +1,21 @@
+// This file was decompiled using SASCM.ini published by GTAG (http://gtag.gtagaming.com/opcode-database) on 14.6.2013
+{$CLEO .cs}
+
+//-------------MAIN---------------
+0000: NOP 
+
+:Noname_2
+wait 0 
+if 
+   Player.Defined($PLAYER_CHAR)
+else_jump @Noname_282 
+if 
+0ADC:   test_cheat "goy" 
+else_jump @Noname_282 
+ 
+018C: play_sound 1052 at 0.0 0.0 0.0 
+wait 1000
+0A92:create_custom_thread "4_admin_tools_v2.cs" 1
+            
+:Noname_282
+jump @Noname_2 

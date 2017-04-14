@@ -21,8 +21,7 @@ c_recov_Decisions::c_recov_Decisions()
 
 	m_CLEO_Manager = std::make_shared<c_CLEO_commandManager>();
 
-	//m_DynamicMemoryManager = std::make_shared<c_DynamicMemoryManager>(13); // 13*4 = 52 byte
-
+	m_GTA_SAMemoryManager = std::make_shared<CMemoeyManager_gta_saExe>();
 }
 
 
@@ -80,15 +79,14 @@ void c_recov_Decisions::new_parsing_package_2017(std::string package)
 
 		if (package.length() != 44) // 36 + 8 
 		{
-			Log("AHTUNG [package.length() != 36] (int)eHeaderPackage::RPC_SERVER_VEHICLE_CAR_POSSITIONS ");
+			Log("[c_recov_Decisions::new_parsing_package_2017] : AHTUNG  package.length() != 36  (int)eHeaderPackage::RPC_SERVER_VEHICLE_CAR_POSSITIONS ");
 			return;
 		}
-
 
 		// unBox package
 		std::shared_ptr	<c_CmmandVehiclePossitions> VehiclePackage = std::make_shared<c_CmmandVehiclePossitions>(package);
 
-		Log("[c_recov_Decisions::new_parsing_package_2017 eHeaderPackage::RPC_SERVER_VEHICLE_CAR_POSSITIONS] ");
+		Log("[c_recov_Decisions::new_parsing_package_2017] :  eHeaderPackage::RPC_SERVER_VEHICLE_CAR_POSSITIONS");
 
 		//VehiclePackage->writeDebugDim();
 
@@ -99,20 +97,29 @@ void c_recov_Decisions::new_parsing_package_2017(std::string package)
 		if (isServVehicleReg)
 		{
 			// refresh possitions
-			Log("[c_CmmandVehiclePossitions] STEP_1_2 %f", static_cast <float> (EDESIGN_COMMAND::CMD_VEHICLE_NEW_POSSITIONS));
+			Log("[c_recov_Decisions::new_parsing_package_2017] : c_CmmandVehiclePossitions  STEP_1_2 %f", static_cast <float> (EDESIGN_COMMAND::CMD_VEHICLE_NEW_POSSITIONS));
 			VehiclePackage->setDesign(static_cast <float>(EDESIGN_COMMAND::CMD_VEHICLE_NEW_POSSITIONS));
+
+			if (m_GTA_SAMemoryManager->IsRunGTA())
+			{
+
+				Log("[c_recov_Decisions::new_parsing_package_2017] GetVehicleCurreentSizePool = %d", m_GTA_SAMemoryManager->GetVehicleCurreentSizePool());
+				Log("[c_recov_Decisions::new_parsing_package_2017] GetVehicleCurreent_MAX_Pool = %d", m_GTA_SAMemoryManager->GetMaxCountVehileOfPool());
+
+
+				m_GTA_SAMemoryManager->FlameFirstVehicleOfPool();
+			}
+			else
+			{
+				Log("[c_recov_Decisions::new_parsing_package_2017] gta is not run");
+			}
+
 		}
 		else
 		{
 			Log("[c_CmmandVehiclePossitions] STEP_1_1 %f", static_cast <float> (EDESIGN_COMMAND::CMD_SPAWN_VEHICLE));
 			VehiclePackage->setDesign(static_cast <float> (EDESIGN_COMMAND::CMD_SPAWN_VEHICLE));
-
 			// create Buffer for Save ServerId inside gta_sa.exe; 
-			float* Buff = m_VehManager->m_DynamicMemoryManager->CreateBuffer();
-
-			m_VehManager->m_DynamicMemoryManager->DebugPringBuffer(Buff);
-
-			VehiclePackage->SetAttachMyBuffer(Buff);
 		}
 
 		m_packageManager->add(VehiclePackage);
@@ -120,11 +127,6 @@ void c_recov_Decisions::new_parsing_package_2017(std::string package)
 		// refresh possition or reg server vehicle
 		m_VehManager->refreshServerMap(servCar);
 	}
-}
-
-void c_recov_Decisions::read(std::stringstream byteArr)
-{
-
 }
 
 void c_recov_Decisions::CLEO_DIM_initsializator(float* A1, float* A2, float* A3, float* A4, float* A5
@@ -172,35 +174,17 @@ void c_recov_Decisions::computeGameWord()
 
 			m_VehManager->m_VehPoolManager->register_By_key_GameObjectHeandle(clientVeh);
 
-			{ // work  rand armour ped
-				DWORD* Base;
-				float* Health;
-				float* Armour;
-				Base = (DWORD*)0xB6F5F0;
-				Armour = (float*)(*Base + 0x548);
-				*Armour = rand() % 50 + 10;
-			}
+			if (m_GTA_SAMemoryManager->IsRunGTA()) // test read gta sa mem
+			{
+				{ // work  rand armour ped
+					DWORD* Base;
+					float* Health;
+					float* Armour;
+					Base = (DWORD*)0xB6F5F0;
+					Armour = (float*)(*Base + 0x548);
+					*Armour = rand() % 50 + 10;
+				}
 
-
-			/*{ // flame self driveng vehicle
-				DWORD* CPed;
-				DWORD* FirstVehicle;
-
-				CPed = (DWORD*)0xB6F5F0;
-				FirstVehicle = (DWORD*)(*CPed + 0x58C);
-
-				float* Health;
-				Health = (float*)(*CPed + 0x540);
-				*Health = 60 + rand() % 20;
- 
-				float* healthVehicle;
-				healthVehicle = (float*)(*FirstVehicle + 0x4C0);
-				*healthVehicle = 240.0f;
-				  
-				Log("Krachik, you did it!");
-			}*/
-
-				
 			{ // flame first Pool Vehicle ? 
 				DWORD* BaseVehiclePool;
 				DWORD* BaseVehiclePool_2;
@@ -211,58 +195,12 @@ void c_recov_Decisions::computeGameWord()
 				BaseVehiclePool_2 = (DWORD*)(*BaseVehiclePool); // 0A8D: 28@ = read_memory 28@ size 4 virtual_protect 0
 
 				BaseVehiclePool_2_count = (DWORD*)(*BaseVehiclePool + 0xC);
-				 
+
 				Log("Krachik, you did it! %d ", *BaseVehiclePool_2_count);
 			}
-				  
-			/*//void CPed::FixLags() не провереный код
-			{
-				DWORD* Base;
-				float* Health;
-				float* Armour;
-				DWORD* XYZMatrix;
-				float* X;
-				float* Y;
-				float* Z;
-
-				Base = (DWORD*)0xB6F5F0;
-
-				if (Base != NULL)
-				{
-					 XYZMatrix = (DWORD*)(*Base + 0x14);
-					 X = (float*)(*XYZMatrix + 0x30);
-					 Y = (float*)(*XYZMatrix + 0x34);
-					 Z = (float*)(*XYZMatrix + 0x38);
-
-					*X += 1000.0;
-					*Y += 1000.0;
-					*Z += 1000.0;
-					Sleep(200);
-					*X -= 1000.0;
-					*Y -= 1000.0;
-					*Z -= 1000.0;
-				}
-				 
-			}*/
+			}
 
 
-
-
-			/*
-			{// not work
-
-			// 0xB6F980 -> 175806008
-			uint32_t fAdres = clientVeh.m_fHeandle;
-
-			uint8_t offsetHeal = 0x4C0;
-			uint8_t* address = reinterpret_cast  <uint8_t*> (fAdres)+ offsetHeal;
-
-			DWORD* pGTA_SA_VEHICLE = reinterpret_cast <DWORD*> (address);
-
-			float* CarHeal = (float*)(pGTA_SA_VEHICLE);
-
-			*CarHeal = 200.0f;
-			}*/
 
 		}
 #endif

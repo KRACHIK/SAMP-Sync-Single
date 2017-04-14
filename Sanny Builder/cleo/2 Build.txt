@@ -1,0 +1,24 @@
+
+{$CLEO .cs}
+
+0000: NOP 
+
+
+
+
+wait 5000
+if 
+    Player.Defined($PLAYER_CHAR)
+then
+       if 
+        0AAB:   file_exists "CLEO\build.ini"
+    then
+        0AF0: 0@ =  int "CLEO\build.ini" section "build" key "start"
+        0@ += 1
+        0AF1: write_int 0@ to_ini_file "CLEO\build.ini" section "build" key "start"
+    else        
+        0AF1: write_int 1 to_ini_file "CLEO\build.ini" section "build" key "start"
+    end  
+    0A93: end_custom_thread   
+end 
+ 

@@ -1,0 +1,21 @@
+
+{$CLEO .cs}
+
+0000: NOP 
+
+
+
+
+wait 5000
+if 
+    Player.Defined($PLAYER_CHAR)
+then
+    0AF3: write_float 7.0 to_ini_file  "CLEO\Packagetype.ini" section "RPC_PLAYER" key "RPC_PLAYER_ACTOR_POSSITIONS"
+ 
+    0AF3: write_float 300.0 to_ini_file "CLEO\Packagetype.ini" section "RPC_VEHICLE" key "RPC_SERVER_VEHICLE_CAR_POSSITIONS"
+    0AF3: write_float 301.0 to_ini_file "CLEO\Packagetype.ini" section "RPC_VEHICLE" key "RPC_VEHICLE_SPAWN"
+    0AF3: write_float 302.0 to_ini_file "CLEO\Packagetype.ini" section "RPC_VEHICLE" key "RPC_VEHICLE_ID_DEATCH"             
+     
+    0A93: end_custom_thread   
+end 
+            
