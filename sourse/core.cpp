@@ -57,7 +57,7 @@ void GameCore::INPUT_Dim_ByCLEO(float A1, int iPrms1, int iPrms2, float A2, floa
 	// print input PRMS [debug] 
 	//printf("\n[GameCore::INPUT_Dim_ByCLEO] %f %d %d %f %f %f %f %f %f %f \t", A1, iPrms1, iPrms2, A2, A3, A4, A5, A6, A7, A8, A9, A10);
 
-#if 0
+#if 1
 	Log(" ");
 	Log("[GameCore::INPUT_Dim_ByCLEO] 1=%f", A1);
 	Log("[GameCore::INPUT_Dim_ByCLEO] i1=%d", iPrms1);
@@ -96,7 +96,14 @@ void GameCore::INPUT_Dim_ByCLEO(float A1, int iPrms1, int iPrms2, float A2, floa
 		/*intitbaseRequest = std::make_shared<c_REQUEST_SAY_SELF_POSSITIONS>((float)m_ClientPassport, A1, A2, A3, A4, A5, A6);
 		m_requestDataBase->add(intitbaseRequest);*/
 		break;
-		  
+
+
+		 
+	case static_cast <int> (EDESIGN_COMMAND::CMD_VEHICLE_NEW_POSSITIONS ) :
+		intitbaseRequest = std::make_shared<CVEHICLE_POSSITIONS>((float)m_ClientPassport, A1, A2, A3, A4, A5, A6, A7, A8);
+		m_requestDataBase->add(intitbaseRequest);	
+		break;
+
 	default:
 		Log("[GameCore::INPUT_Dim_ByCLEO] case default design=%d", design);
 		break;

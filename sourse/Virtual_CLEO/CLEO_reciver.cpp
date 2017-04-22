@@ -1,5 +1,6 @@
 ﻿#include "CLEO_reciver.h"
 #include "CLEO_reg_heandle_from_Pool.h"
+#include "CLEO_send_ClientVehiclePossitions.h"
 
 #include "..\\package_type.h"
 
@@ -46,9 +47,31 @@ void TEST_CLEO_Reciver::start()
 }
 
 void TEST_CLEO_Reciver::isRecovCommandVehiclePossitions()
-{
-	//system("cls");
+{ 
 	std::cout << "[CLEO SCRIPT] UPDATE VEHICLE possitions " << "\n";
+
+
+	CLEO_SEND_CLIENT_POSSITIONS_VEHICLE test_send_new_pos_vehicle;
+
+	test_send_new_pos_vehicle.initCleoDim
+		(
+		/* fPrms_1 */    (float)(EDESIGN_COMMAND::CMD_VEHICLE_NEW_POSSITIONS )
+
+		/* iPrms_1 */, -1L
+		/* iPrms_2 */, -1L
+
+		/* fPrms_2 */, *m_ptr2 // model ?
+		/* fPrms_3 */, 0.0
+		/* fPrms_4 */, 0.0
+		/* fPrms_5 */, 0.0
+		/* fPrms_6 */, 45.0
+		/* fPrms_7 */, 10
+		/* fPrms_8 */, *m_ptr3 // Server ID ? 
+		/* fPrms_9 */, 126//  
+		/* fPrms_9 */, 126 //  
+		);
+
+	test_send_new_pos_vehicle.Call_00A5_send_to_DLL();
 
 }
 
@@ -78,38 +101,7 @@ void TEST_CLEO_Reciver::isRecovCommandVehicleSpawn()
 		/* fPrms_9 */, *m_ptr10 // color_2
 		);
 
-	/*if (m_ptr3 != nullptr && *m_ptr3 != -1)
-	{
-		float* pTmpDim = m_ptr3;
-
-		float val = *pTmpDim;
-		pTmpDim += 4;
-		
-		std::cout << "Yeah  = " << val << "\n";
-			
-		pTmpDim += 4; val = *pTmpDim;
-		std::cout << "Yeah  = " << val << "\n";
-
-		pTmpDim += 4; val = *pTmpDim;
-		std::cout << "Yeah  = " << val << "\n";
-
-		pTmpDim += 4; val = *pTmpDim;
-		std::cout << "Yeah  = " << val << "\n";
-
-		pTmpDim += 4; val = *pTmpDim;
-		std::cout << "Yeah  = " << val << "\n";
-
-		pTmpDim += 4; val = *pTmpDim;
-		std::cout << "Yeah  = " << val << "\n";
-
-		pTmpDim += 4; val = *pTmpDim;
-		std::cout << "Yeah  = " << val << "\n";
-
-		pTmpDim += 4; val = *pTmpDim;
-		std::cout << "Yeah  = " << val << "\n";
-
-	}*/
-
+ 
 	m_Test_IheandleVehicle_exe++;
 
 	test_spawn_and_reg_car_database.Call_00A5_send_to_DLL();

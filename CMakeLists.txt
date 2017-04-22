@@ -30,6 +30,9 @@ file( GLOB SOURCE_CODE
 	
 	sourse/Virtual_CLEO/CLEO_send_requestCarOfLocalPool.cpp
 	sourse/Virtual_CLEO/CLEO_send_requestCarOfLocalPool.h 
+	
+	sourse/Virtual_CLEO/CLEO_send_ClientVehiclePossitions.cpp
+	sourse/Virtual_CLEO/CLEO_send_ClientVehiclePossitions.h 
 )
 source_group("" FILES ${SOURCE_CODE})
 set(Boost_USE_STATIC_LIBS        ON)

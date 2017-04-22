@@ -45,15 +45,13 @@ private:
 class c_REQUEST_GET_VEHICLE : public c_BaseRequest
 {
 public:
-	 
+
 	c_REQUEST_GET_VEHICLE(float ClientPassport, float design, float want_ModelCar,
 		float xPos, float yPos, float zPos, float angle, float speed, float color1, float color2);
 
 	virtual void init();
 
 	std::string getMsg();
-
-	void debugPrintvalueDim();
 
 private:
 
@@ -65,7 +63,7 @@ private:
 	float m_zPos;
 	float m_angle;
 	float m_speed;
-	 
+
 	float m_fColor1;
 	float m_fColor2;
 
@@ -73,13 +71,70 @@ private:
 };
 
 
+class CVEHICLE_POSSITIONS : public c_BaseRequest
+{
+public:
+
+	CVEHICLE_POSSITIONS(float ClientPassport, float design, float want_ModelCar,
+		float xPos, float yPos, float zPos, float angle, float speed, float fServerID)
+		:
+		m_fClientPassport(ClientPassport)
+		, m_design(design)
+		, m_fModelCar(want_ModelCar)
+		, m_xPos(xPos)
+		, m_yPos(yPos)
+		, m_zPos(zPos)
+		, m_angle(angle)
+		, m_speed(speed)
+		, m_fServerID(fServerID)
+	{
+		init();
+		debugPrintValueDim();
+	}
+
+	virtual void init();
+
+	std::string getMsg();
+
+	void debugPrintValueDim()
+	{
+		Log("[CVEHICLE_POSSITIONS::debugPrintValueDim]");
+		Log("passport = %f", m_fClientPassport);
+		Log("model = %f", m_fModelCar);
+		Log("design = %f", m_design);
+		Log("x = %f", m_xPos);
+		Log("y = %f", m_yPos);
+		Log("z = %f\n", m_zPos);
+		Log("angle = %f", m_angle);
+		Log("speed = %f", m_speed);
+		Log("m_fServerID  = %f", m_fServerID);
+	}
+
+
+
+private:
+
+	float m_fClientPassport =-1;
+	float m_design = -1;
+	float m_fModelCar = -1;
+	float m_xPos = -1;
+	float m_yPos = -1;
+	float m_zPos = -1;
+	float m_angle = -1;
+	float m_speed = -1;
+	float m_fServerID = -1;
+
+
+	std::string m_sendPackage;
+};
+
 class c_RequestDataBaseManager
 {
 public:
 	c_RequestDataBaseManager();
 
 	void add(std::shared_ptr <c_BaseRequest> package);
-	  
+
 	std::string getFirstMessageAndPopPackage();
 
 	bool emty();
@@ -87,6 +142,6 @@ public:
 private:
 
 	void pop();
-	 
+
 	std::deque <std::shared_ptr<c_BaseRequest>> m_sendPackagedeque;
 };

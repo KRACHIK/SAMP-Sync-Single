@@ -145,3 +145,37 @@ std::string c_REQUEST_GET_VEHICLE::getMsg()
 {
 	return m_sendPackage;
 }
+
+void CVEHICLE_POSSITIONS::init()
+{	
+	c_MyUtiles m_utiles;
+
+	m_sendPackage =
+		m_utiles.IntToHEX(m_fClientPassport)		// clientPassport
+		+ m_utiles.FloatToHEX(m_design) 			// design
+		+ m_utiles.FloatToHEX(m_fModelCar)			// want ModelCar
+		+ m_utiles.FloatToHEX(m_xPos)				// xPos
+		+ m_utiles.FloatToHEX(m_yPos)				// yPos
+		+ m_utiles.FloatToHEX(m_zPos)				// zPos
+		+ m_utiles.FloatToHEX(m_angle)				// yPos
+		+ m_utiles.FloatToHEX(m_speed)				// zPos
+		+ m_utiles.FloatToHEX(m_fServerID);
+
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] ClientPassport %d", (m_fClientPassport));
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] design %f", (m_design));
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] modelCar %f", (m_fModelCar));
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] x %f", (m_xPos));
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] y %f", (m_yPos));
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] z %f", (m_zPos));
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] angle %f", (m_angle));
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] speed %f", (m_speed));
+	Log("[c_BaseRequest::CVEHICLE_POSSITIONS::init] servID %f", (m_fServerID));
+}
+
+std::string CVEHICLE_POSSITIONS::getMsg()
+{
+	Log("[CVEHICLE_POSSITIONS::getMsg]");
+	return m_sendPackage;
+}
+
+ 

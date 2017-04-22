@@ -56,9 +56,9 @@ int CMemoeyManager_gta_saExe::GetVehicleCurreentSizePool()
 	DWORD* m_p2_BaseVehiclePool;
 	DWORD* m_BaseVehiclePoolCuurrentSize;
 
-	m_p1_BaseVehiclePool = (DWORD*)0xB74494;	//0A8D: 28@ = read_memory 0xB74494 size 4 virtual_protect 0 // Указатель на первый элемент в пуле транспорта 
+	m_p1_BaseVehiclePool = (DWORD*)0xB74494;	// Указатель на первый элемент в пуле транспорта 
 
-	m_p2_BaseVehiclePool = (DWORD*)(*m_p1_BaseVehiclePool); // 0A8D: 28@ = read_memory 28@ size 4 virtual_protect 0
+	m_p2_BaseVehiclePool = (DWORD*)(*m_p1_BaseVehiclePool);  
 
 	m_BaseVehiclePoolCuurrentSize = (DWORD*)(*m_p1_BaseVehiclePool + 0xC);
 
@@ -75,8 +75,6 @@ void CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool()
 
 	int CountVehicle = GetVehicleCurreentSizePool();
 
-	/*
-	не робит
 	if (CountVehicle > 0)
 	{
 		DWORD *pDVehiclePool;
@@ -89,19 +87,44 @@ void CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool()
 		{
 			NextElement = (DWORD*)*pDVehiclePool;
 
-			//...
-			float* HealthVehicle;
-
-			HealthVehicle = (float*)(*NextElement + 0x4C0);
-
-			Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] *HealthVehicle = %f, NextElement = %d *NextElement = %d\n", *HealthVehicle, NextElement, *NextElement);
-
 			// действие
-			pDVehiclePool = (DWORD*)*pDVehiclePool + 0xA18;
+			float* HealthVehicle;
+			HealthVehicle = (float*)(*NextElement + 0x4C0);
+			Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] *HealthVehicle = %f, NextElement = %d *NextElement = %d\n", *HealthVehicle, NextElement, *NextElement);
+			 
+			//не робит
+			pDVehiclePool = (DWORD*)*pDVehiclePool + 0xA18; // нужно использовать uint32_t  ?
+			//...
 		}
-	}*/
+	}
+
+	 
+#if 0 // Работает, но только с первой найденой тачкой 
+	DWORD *pDVehiclePool;
+	pDVehiclePool = (DWORD*)0xB74494;
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] pDVehiclePool %d  *pDVehiclePool = %d", pDVehiclePool, *pDVehiclePool);
+	DWORD *firstElement;
+	firstElement = (DWORD*)*pDVehiclePool;
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] firstElement %d  *firstElement = %d", firstElement, *firstElement);
+	float* HealthVehicle;
+	HealthVehicle = (float*)(*firstElement + 0x4C0);
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] *firstElement + 0x4C0 = %d  ", *firstElement + 0x4C0);
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] HealthVehicle = %f", *HealthVehicle);
+	// *HealthVehicle = 1.0f;
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] Set HealthVehicle = %f", *HealthVehicle);
+#endif
+}
 
 
+
+
+
+void CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool____v2()
+{
+	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool____v2]");
+
+	int CountVehicle = GetVehicleCurreentSizePool();
+	 
 #if 0 // робит. но только с первой найденой тачкой 
 	DWORD *pDVehiclePool;
 	pDVehiclePool = (DWORD*)0xB74494;
@@ -116,6 +139,7 @@ void CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool()
 	// *HealthVehicle = 1.0f;
 	Log("[CMemoeyManager_gta_saExe::FlameFirstVehicleOfPool] Set HealthVehicle = %f", *HealthVehicle);
 #endif
+
 
 
 }

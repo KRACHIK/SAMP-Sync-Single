@@ -36,7 +36,7 @@ void Init_UDP_Client()
 	LogFile("sdmlsdfkgnsf");
 
 	Beep(2000, 700);
-
+	 
 	// for glMyCLEO_Core not deatch
 	while (true)
 	{

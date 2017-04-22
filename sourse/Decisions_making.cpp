@@ -106,8 +106,6 @@ void c_recov_Decisions::new_parsing_package_2017(std::string package)
 				Log("[c_recov_Decisions::new_parsing_package_2017] GetVehicleCurreentSizePool = %d", m_GTA_SAMemoryManager->GetVehicleCurreentSizePool());
 				Log("[c_recov_Decisions::new_parsing_package_2017] GetVehicleCurreent_MAX_Pool = %d", m_GTA_SAMemoryManager->GetMaxCountVehileOfPool());
 
-
-				m_GTA_SAMemoryManager->FlameFirstVehicleOfPool();
 			}
 			else
 			{
@@ -196,71 +194,73 @@ void c_recov_Decisions::computeGameWord()
 
 				BaseVehiclePool_2_count = (DWORD*)(*BaseVehiclePool + 0xC);
 
-				Log("Krachik, you did it! %d ", *BaseVehiclePool_2_count);
-			}
-			}
+				Log("Krachik, you did it! %d ", *BaseVehiclePool_2_count);	}
 
-
-
-		}
+				/*{	DWORD* Base;
+				uint32_t COMPUTE_PTR = (DWORD)0xB6F5F0 + (DWORD)0x548;
+				Base = (DWORD*)COMPUTE_PTR;
+				float* Armour;
+				Armour = (float*)(*Base);
+				*Armour = 80;
+				Log("achivment uint32_t %f ", *Armour);		
+				}*/
 #endif
 
+				if (design == static_cast <int> (eLOCAL_CLIENT_CMD::GET_HEANDLE_CAR_OF_POOL))
+				{
 
-#if 1
-		if (design == static_cast <int> (eLOCAL_CLIENT_CMD::GET_HEANDLE_CAR_OF_POOL))
-		{
+					if (!m_VehManager->m_VehPoolManager->empty())
+					{
+						Log("[eLOCAL_CLIENT_CMD::GET_HEANDLE_CAR_OF_POOL] STEP 4 [Begin]");
 
-			if (!m_VehManager->m_VehPoolManager->empty())
-			{
-				Log("[eLOCAL_CLIENT_CMD::GET_HEANDLE_CAR_OF_POOL] STEP 4 [Begin]");
+						c_ClientVehicle veh = m_VehManager->m_VehPoolManager->getObjectPool();
+						veh.writeDebugLogDim();
 
-				c_ClientVehicle veh = m_VehManager->m_VehPoolManager->getObjectPool();
-				veh.writeDebugLogDim();
+						m_VehManager->m_VehPoolManager->incIteratorPool();
 
-				m_VehManager->m_VehPoolManager->incIteratorPool();
-
-				std::shared_ptr	<c_CommandGetHeandleVehicle> VehiclePackage = std::make_shared<c_CommandGetHeandleVehicle>(veh);
+						std::shared_ptr	<c_CommandGetHeandleVehicle> VehiclePackage = std::make_shared<c_CommandGetHeandleVehicle>(veh);
 
 
-				VehiclePackage->setDesign(static_cast <float> (eLOCAL_CLIENT_CMD::GET_HEANDLE_CAR_OF_POOL));
+						VehiclePackage->setDesign(static_cast <float> (eLOCAL_CLIENT_CMD::GET_HEANDLE_CAR_OF_POOL));
 
-				m_packageManager->add(VehiclePackage);
+						m_packageManager->add(VehiclePackage);
 
-				Log("[eLOCAL_CLIENT_CMD::GET_HEANDLE_CAR_OF_POOL] STEP 4 [end]");
-			}
+						Log("[eLOCAL_CLIENT_CMD::GET_HEANDLE_CAR_OF_POOL] STEP 4 [end]");
+					}
+				}
 
-		}
-#endif
 
-#if 0
-		if (design == static_cast <int> (eLOCAL_CLIENT_CMD::TEST_GET_HEALCH_VEHICLE))
-		{
-
-			Log("[static_cast <int> (eLOCAL_CLIENT_CMD::TEST_GET_HEALCH_VEHICLE)]");
-
-			if (!m_VehManager->m_VehPoolManager->empty())
-			{
-
-				Log("[Get Car of Vehicle, Print Dim]");
-
-				c_ClientVehicle veh = m_VehManager->m_VehPoolManager->getObjectPool();
-
-				veh.writeDebugLogDim();
-
-				m_VehManager->m_VehPoolManager->incIteratorPool();
-
-				DWORD* Buff = m_DynamicMemoryManager->CreateBuffer();
 
 			}
 		}
-#endif
-
-
-
-
 	}
 }
 
 
+
+
+
+#if 0
+	if (design == static_cast <int> (eLOCAL_CLIENT_CMD::TEST_GET_HEALCH_VEHICLE))
+	{
+
+		Log("[static_cast <int> (eLOCAL_CLIENT_CMD::TEST_GET_HEALCH_VEHICLE)]");
+
+		if (!m_VehManager->m_VehPoolManager->empty())
+		{
+
+			Log("[Get Car of Vehicle, Print Dim]");
+
+			c_ClientVehicle veh = m_VehManager->m_VehPoolManager->getObjectPool();
+
+			veh.writeDebugLogDim();
+
+			m_VehManager->m_VehPoolManager->incIteratorPool();
+
+			DWORD* Buff = m_DynamicMemoryManager->CreateBuffer();
+
+		}
+	}
+#endif
 
 

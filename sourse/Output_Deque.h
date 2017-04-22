@@ -145,14 +145,14 @@ public:
 	virtual void init(float* A1, float* A2, float* A3, float* A4, float* A5
 		, float* A6, float* A7, float * A8, float * A9, float * A10)
 	{
-
 		*A1 = m_fDesign;
-
 		*A2 = m_ClientVehicle.m_fModel;
 		*A3 = m_ClientVehicle.m_fServerID;
 		*A4 = m_ClientVehicle.m_fX;
 		*A5 = m_ClientVehicle.m_fY;
 		*A6 = m_ClientVehicle.m_fZ;
+
+
 
 		*A7 = m_ClientVehicle.m_fHeandle;
 		*A8 = -1.0;// m_ClientVehicle.m_fSpeed;

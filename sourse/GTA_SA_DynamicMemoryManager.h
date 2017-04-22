@@ -31,6 +31,8 @@ public:
 	int GetVehicleCurreentSizePool();
 
 	void FlameFirstVehicleOfPool();
+	void FlameFirstVehicleOfPool____v2();
+
 private:
  
 	int m_CountElementsSize4Byte = -1;
