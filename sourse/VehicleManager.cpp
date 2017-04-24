@@ -8,6 +8,7 @@
 
 #include "package_type.h"
 
+#include <cstddef>
 
 c_VehicleManager::c_VehicleManager()
 {
@@ -16,7 +17,7 @@ c_VehicleManager::c_VehicleManager()
 	m_VehPoolManager = std::make_shared<c_CLEO_Object_pool>();
 }
 
- 
+
 bool c_VehicleManager::findClientVehicleMap(c_ServerVehicle vehicle)
 {
 	int serverID = (int)vehicle.m_fServerID;
@@ -33,7 +34,7 @@ bool c_VehicleManager::findClientVehicleMap(c_ServerVehicle vehicle)
 }
 
 
-bool c_VehicleManager::findServerVehicleMap(c_ServerVehicle vehicle) 
+bool c_VehicleManager::findServerVehicleMap(c_ServerVehicle vehicle)
 {
 	int serverID = (int)vehicle.m_fServerID;
 
@@ -46,6 +47,50 @@ bool c_VehicleManager::findServerVehicleMap(c_ServerVehicle vehicle)
 		return true;
 
 	return false;
+}
+
+c_ServerVehicle c_VehicleManager::GetServerVehicleMap(int KeyServerID)
+{
+	int serverID = KeyServerID;
+
+	auto it = std::find_if(m_serverVehicleMap.begin(), m_serverVehicleMap.end(),
+		[&serverID](const std::pair<int, c_ServerVehicle> &p){
+		return p.first == serverID;
+	});
+
+	if (it != m_serverVehicleMap.end())		// update 	 
+	{
+		c_ServerVehicle ssafeVehicle =  it->second;
+
+		Log("c_VehicleManager::GetServerVehicleMap Return Vehicle");
+
+		ssafeVehicle.DebugPrintValueDIM();
+	}
+	else
+	{
+		return c_ServerVehicle();
+
+	}
+}
+
+c_ClientVehicle c_VehicleManager::GetClientVehicleMap(int KeyServerID)
+{
+	int serverID = KeyServerID;
+
+	auto it = std::find_if(m_clientVehicleMap.begin(), m_clientVehicleMap.end(),
+		[&serverID](const std::pair<int, c_ClientVehicle> &p){
+		return p.first == serverID;
+	});
+
+	if (it != m_clientVehicleMap.end())		// update 	 
+	{
+		return it->second;
+	}
+	else
+	{
+
+		return c_ClientVehicle();
+	}
 }
 
 //void c_VehicleManager::regServVehAtClientVehicleMap(c_ServerVehicle Vehicle)
@@ -92,9 +137,9 @@ void c_VehicleManager::refreshClientMap(c_ClientVehicle vehicle)
 		return;
 	}
 
-	 
+
 	m_VehPoolManager->register_By_key_GameObjectHeandle(vehicle);
-	 
+
 	int serverID = (int)vehicle.m_fServerID;
 
 	auto it = std::find_if(m_clientVehicleMap.begin(), m_clientVehicleMap.end(),
@@ -114,7 +159,7 @@ void c_VehicleManager::refreshClientMap(c_ClientVehicle vehicle)
 	}
 
 }
-  
+
 bool c_VehicleManager::compareVehicleByModel(c_ClientVehicle vehicle)
 {
 	if (!isVehicleInitCorrect(vehicle))
@@ -123,7 +168,7 @@ bool c_VehicleManager::compareVehicleByModel(c_ClientVehicle vehicle)
 		exit(1);
 		return false;
 	}
-	  
+
 	int serverID = (int)vehicle.m_fServerID;
 
 	auto it = std::find_if(m_clientVehicleMap.begin(), m_clientVehicleMap.end(),
@@ -131,12 +176,12 @@ bool c_VehicleManager::compareVehicleByModel(c_ClientVehicle vehicle)
 		return p.first == serverID;
 	});
 
-		 
+
 	if (it != m_clientVehicleMap.end())		// update 	 
 	{
 		if (it->second.m_fModel == vehicle.m_fModel)
 			if (it->second.m_fServerID == vehicle.m_fServerID)
-			return true;
+				return true;
 	}
 	else
 	{// reg
@@ -145,7 +190,7 @@ bool c_VehicleManager::compareVehicleByModel(c_ClientVehicle vehicle)
 	}
 	return false;
 }
-		 
+
 
 
 c_ServerVehicle c_VehicleManager::createServerVehicle(std::shared_ptr <c_CmmandVehiclePossitions> & VehiclePackage)
@@ -164,11 +209,11 @@ c_ServerVehicle c_VehicleManager::createServerVehicle(std::shared_ptr <c_CmmandV
 
 	return tmp;
 }
-  
+
 
 
 bool c_VehicleManager::isVehicleInitCorrect(c_ClientVehicle &vehicle)
-{ 
+{
 	if (isDefinedGameCarModel((int)vehicle.m_fModel)
 		&& isValidServerID((int)vehicle.m_fServerID))
 		return true;

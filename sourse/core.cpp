@@ -111,8 +111,8 @@ void GameCore::INPUT_Dim_ByCLEO(float A1, int iPrms1, int iPrms2, float A2, floa
 
 
 	m_Design_Maker->m_CLEO_Manager->add_p(A1, iPrms1, iPrms2, A2, A3, A4, A5, A6, A7, A8, A9, A10);
-
 	m_Design_Maker->computeGameWord();
+
 
 
 #if 1

@@ -104,7 +104,7 @@ public:
 		Log("design = %f", m_design);
 		Log("x = %f", m_xPos);
 		Log("y = %f", m_yPos);
-		Log("z = %f\n", m_zPos);
+		Log("z = %f", m_zPos);
 		Log("angle = %f", m_angle);
 		Log("speed = %f", m_speed);
 		Log("m_fServerID  = %f", m_fServerID);

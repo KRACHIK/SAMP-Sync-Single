@@ -1,0 +1,230 @@
+  
+{$CLEO .cs} 
+
+const
+    {Main Dim}
+    SCRIPT_NAME  =   "4_SyncOnfootVehiclePossittions"
+    scritpPath   =   "cleo\4_SyncOnfootVehiclePossittions.ini"
+         
+    _Library_MY_SAMP_CORE_DLL               =       0@    
+    _Public_InPutDimByCLEO                  =       2@
+    _Public_output_DimByCLEO                =       3@
+    {End} 
+
+    {SAMP HOOK CHAT} 
+    m_PtrLibSampChat            = 5@
+    m_PTR_MAIN_FUNCSSAMP_CHAT   = 6@
+    m_PTR_PRINT_MESSAGE         = 7@
+    m_INT_GEREEN_COLOR          = 8@
+    m_LibName_SAMPHOOKCHATDLL = "SampHookChat.dll"
+    {end}
+    
+    {4_SyncOnfootVehiclePossittions} 
+    m_ACTIVE_INTERIOR    =       9@
+    m_ONFOOT_VEHICLE_SEARCH_SYNC_DISTANCE = 20.0     
+    m_HeaderPackage = 11@   
+    m_Model_Car     = 14@
+    m_x             = 15@
+    m_y             = 16@
+    m_z             = 17@
+    m_angle         = 18@
+    m_speed         = 19@
+    {End}
+    
+end
+  
+0000: 
+
+ 
+
+if    // flag start      
+    0@ == 1
+then
+    goto @initcializatciia 
+else
+    goto @panik_unload    
+end
+ 
+:initcializatciia
+    // load .dll
+    if                                  
+        0AA2: _Library_MY_SAMP_CORE_DLL = load_library "SAMP++.dll"    
+    jf @panik_unload
+ 
+    0AF1: write_int _Library_MY_SAMP_CORE_DLL to_ini_file scritpPath section SCRIPT_NAME key "SAMP++"   
+      
+    // Public_output_DimByCLEO
+    if                                                       
+        0AA4: _Public_InPutDimByCLEO = get_proc_address "Public_InPutDimByCLEO" library _Library_MY_SAMP_CORE_DLL  
+    jf @free_lib_and_end_custom_thread
+     
+    0AF1: write_int _Public_InPutDimByCLEO to_ini_file scritpPath section SCRIPT_NAME key "Public_InPutDimByCLEO" 
+      
+    // get ptr "Public_InPutDimByCLEO"
+    if 
+       0AA4: _Public_output_DimByCLEO = get_proc_address "Public_OUTPUT_DimByCLEO" library _Library_MY_SAMP_CORE_DLL
+    jf @free_lib_and_end_custom_thread
+    
+     
+    0AF1: write_int _Public_output_DimByCLEO to_ini_file scritpPath section SCRIPT_NAME key "Public_OUTPUT_DimByCLEO" 
+  
+    0A92:create_custom_thread "SAMP_CHAT_H00K.cs" {Flag_Start}1 {Type}2.6
+            
+wait 2222
+    
+:main
+while true
+    wait 1000
+    
+    if Player.Defined($PLAYER_CHAR)
+     then                  
+        09E8: {Get} m_ACTIVE_INTERIOR $PLAYER_ACTOR  
+        
+        if m_ACTIVE_INTERIOR == 0 
+        then  
+            gosub @TimerSendPossitions    
+        end
+
+    end
+end // end while
+
+
+
+                                
+
+:TimerSendPossitions
+wait 0 
+       
+04C4: store_coords_to 25@ 26@ 27@ from_actor $PLAYER_ACTOR with_offset 0.0 0.0 0.0 
+
+if 
+    0AE2: 23@ = random_vehicle_near_point 25@ 26@ 27@ in_radius m_ONFOOT_VEHICLE_SEARCH_SYNC_DISTANCE find_next 0 pass_wrecked 1 //IF and SET 
+then
+    repeat
+        if 
+            056E:  23@    //car.Defined(   )  
+        then
+            0AB1: call_scm_func @SCM_int_GetVehicleStatusBomb {NumPrms=}1 {Heandle}23@ {return->} 13@
+            if 
+                13@ == 3  // (int) 003B: 
+            then
+                {m_Model_Car} 14@ = Car.Model(23@)
+                008F: {ModelCar}14@ = integer {ModelCar}14@ to_float
+                
+                
+                {serverId = 13@}                             
+                008F: {serverId}13@ = integer {serverId}13@ to_float
+                
+                { Car Possitions}
+                car.StorePos(23@, m_x,  m_y,  m_z) {15@,16@,17@}                                 
+                
+                m_angle = Car.Angle(23@)
+                m_speed = 10.0 //?
+                
+                0A92: create_custom_thread "3_RenderEventOnTheMap.cs" 1 m_x m_y m_z 14 1000
+                
+                {Header Package}11@ = 403.0     // For New_Vehicle_Pos 
+                
+                22@ = -1.0 // not used
+                21@ = -1.0 // not used
+                
+                0AA5: call _Public_InPutDimByCLEO num_params 12 pop 12 {-1}22@V {-1}21@V {serverID}13@V {speed}19@V {angle}18@V {z}17@V {y}16@V {x}15@V {model}14@V {int}-1 {int}-1 {design}11@V                             
+                
+                wait 200                       
+                0A92: create_custom_thread "3_RenderEventOnTheMap.cs" 1 m_x m_y m_z 14 1000
+            end                        
+            
+              
+        end 
+    until 8AE2: not 23@ = random_vehicle_near_point 25@ 26@ 27@ {m_x m_y m_z} in_radius m_ONFOOT_VEHICLE_SEARCH_SYNC_DISTANCE find_next 1 pass_wrecked 1                                                                                         
+end                                                                                                                                                                
+return
+
+
+:free_lib_and_end_custom_thread 
+0AA3: free_library 0@       
+0A93: end_custom_thread
+ 
+     
+:panik_unload
+0A93: end_custom_thread
+   
+  
+:SAMP_PRINT_MSG_GOSUB
+repeat
+    wait 1000
+until player.Defined(0)
+   
+wait 0
+if
+    0AA2: m_PtrLibSampChat = load_library m_LibName_SAMPHOOKCHATDLL  
+then
+    if 
+        0AA4: m_PTR_MAIN_FUNCSSAMP_CHAT = get_proc_address "initDllFuncs" library m_PtrLibSampChat // IF and SET
+    then                     
+    // for auto call void main {}
+        0AA5: call m_PTR_MAIN_FUNCSSAMP_CHAT num_params 0 pop 0     
+        
+        // init color message
+        0092: m_INT_GEREEN_COLOR = float m_INT_GEREEN_COLOR to_integer
+        m_INT_GEREEN_COLOR = 3393434934 // hz kak poluchilos (green color)        
+ 
+        // get pointer my funcs
+        if 
+            0AA4: m_PTR_PRINT_MESSAGE = get_proc_address "MyChatMSG" library m_PtrLibSampChat // IF and SET
+        then              
+            // [debug] print info                       
+            00A0: store_actor $PLAYER_ACTOR position_to $TEMPVAR_FLOAT_1 $TEMPVAR_FLOAT_2 $TEMPVAR_FLOAT_3
+                                 
+//            0AD3: string 23@v "%d_Admin_tool_v2.cs is init!" 4
+            0AA5: call m_PTR_PRINT_MESSAGE num_params 2 pop 2 m_INT_GEREEN_COLOR 23@v 
+            018C: play_sound 1052 at 0.0 0.0 0.0
+                       
+            0AA3: free_library m_PtrLibSampChat
+        END                                             
+    end      
+end  
+return 
+          
+ 
+
+
+:SCM_integer_GetPlayer_Money { 0@ = Ped_Heandle}                                            {:SCM_integer_GetPlayer_Money}
+{ Input: 0@ = Ped_Heandle}                                                                  {:SCM_integer_GetPlayer_Money}
+{ Output 1@ = Money }                                                                       {:SCM_integer_GetPlayer_Money}
+                                                                                            {:SCM_integer_GetPlayer_Money}
+    0A96: {ActorStruct}2@ = actor {Ped_Heandle}0@ struct                                    {:SCM_integer_GetPlayer_Money}
+                                                                                            {:SCM_integer_GetPlayer_Money}
+    0A8E: {AdresMoney}3@ = {ActorStruct}2@ + 0x756    //  CPed + 0x756 (offset To Money)    {:SCM_integer_GetPlayer_Money}
+                                                                                            {:SCM_integer_GetPlayer_Money}
+    0A8D: {Money} 1@ = read_memory {AdresMoney}3@ size 4 virtual_protect 0                  {:SCM_integer_GetPlayer_Money}                      
+0AB2: ret 1 {Money} 1@                                                                      {:SCM_integer_GetPlayer_Money}
+
+
+
+:SCM_int_GetVehicleStatusBomb {  Heandle=0@}                                                     {:SCM_int_GetVehicleStatusBomb}
+{ input: }                                                                                       {:SCM_int_GetVehicleStatusBomb}
+{0@ = Car_Heandle }                                                                              {:SCM_int_GetVehicleStatusBomb}
+                                                                                                 {:SCM_int_GetVehicleStatusBomb}
+{Output}                                                                                         {:SCM_int_GetVehicleStatusBomb}
+{1@ = Status }                                                                                   {:SCM_int_GetVehicleStatusBomb}
+                                                                                                 {:SCM_int_GetVehicleStatusBomb}
+    0A97: {CarStruct}2@ = car {MyCar}0@ struct                                                   {:SCM_int_GetVehicleStatusBomb}         
+    0A8E: {AdresBigBang}3@ = {CarStruct}2@ + 0x4A8     //  0x4A8                                 {:SCM_int_GetVehicleStatusBomb} 
+    0A8D: {Status} 1@ = read_memory {AdresBigBang}3@ size 4 virtual_protect 0                    {:SCM_int_GetVehicleStatusBomb}
+0AB2: ret 1 {return void} {Status} 1@                                                            {:SCM_int_GetVehicleStatusBomb}
+{//////////////////////////////////////////////////////////////////////////////////////////////////////}
+
+
+
+
+
+:SCM_Get_Heandle_DriverPed_In_Car { 0@ - Heandle Car}
+if  056E: 0@ // car.Defined( 13@ )             
+ then 
+    0432: 1@ = get actor handle from car 0@ passenger -1 
+end
+0AB2: ret 1 1@ {return void} {HEandlePed}  
+{//////////////////////////////////////////////////////////////////////////////////////////////////////}
+
+ 

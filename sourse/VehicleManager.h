@@ -30,6 +30,10 @@ public:
 
 	bool findServerVehicleMap(c_ServerVehicle vehicle);
 
+	c_ServerVehicle GetServerVehicleMap(int KeyServerID);
+
+	c_ClientVehicle GetClientVehicleMap(int KeyServerID);
+
 	void refreshServerMap(c_ServerVehicle Vehicle);
 
 	void refreshClientMap(c_ClientVehicle Vehicle);

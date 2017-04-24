@@ -207,3 +207,13 @@ void c_MyBackGraundMessageBox::MyMsgBox()
 {
 	MessageBoxA(0, m_msg.c_str(), m_msg2.c_str(), 0);
 }
+
+double c_Compute::Distance(CPoint3D Point1, CPoint3D Point2)
+{
+	double Distance =
+		sqrt(pow((Point1.GetX() - Point2.GetX()), 2.0))
+		+ sqrt(pow((Point1.GetY() - Point2.GetY()), 2.0))
+		+ sqrt(pow((Point1.GetZ() - Point2.GetZ()), 2.0));
+
+	return Distance;
+}
